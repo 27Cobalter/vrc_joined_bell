@@ -30,4 +30,5 @@ if __name__ == "__main__":
         for line in loglines:
             pattern = ".*?[NetworkManager] OnPlayerJoined.*"
             if re.match(pattern, line):
+                print(line)
                 winsound.PlaySound(data, winsound.SND_MEMORY)
