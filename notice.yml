@@ -1,0 +1,4 @@
+".*?Received Notification:.*?type:invite.*": "sousd.wav"
+".*?Received Notification:.*?type:requestInvite.*": "sound.wav"
+".*?\\[NetworkManager\\] OnPlayerJoined.*": "sound.wav"
+".*?\\[NetworkManager\\] OnPlayerLeft.*": "sound.wav"

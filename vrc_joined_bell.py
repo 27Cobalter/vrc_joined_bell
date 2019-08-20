@@ -3,8 +3,7 @@ import glob
 import os
 import re
 import winsound
-
-soundfile = "sound.wav"
+import yaml
 
 
 def tail(thefile):
@@ -18,17 +17,23 @@ def tail(thefile):
 
 
 if __name__ == "__main__":
-    with open(soundfile, "rb") as f:
-        data = f.read()
+    with open("notice.yml", "r") as conf:
+        notices = yaml.load(conf, Loader=yaml.SafeLoader)
+    print("load config")
+    for k, v in notices.items():
+        print("  " + k + ": " + v)
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
     logfiles.sort(key=os.path.getctime, reverse=True)
 
     with open(logfiles[0], "rb") as f:
+        print("open logfile : ", logfiles[0])
         loglines = tail(f)
         for line in loglines:
-            pattern = ".*?[NetworkManager] OnPlayerJoined.*"
-            if re.match(pattern, line):
-                print(line)
-                winsound.PlaySound(data, winsound.SND_MEMORY)
+            for pattern, soundfile in notices.items():
+                if re.match(pattern.encode(), line):
+                    print(line)
+                    with open(soundfile, "rb") as f:
+                        data = f.read()
+                    winsound.PlaySound(data, winsound.SND_MEMORY)
