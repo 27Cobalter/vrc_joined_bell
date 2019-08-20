@@ -25,7 +25,7 @@ if __name__ == "__main__":
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
     logfiles.sort(key=os.path.getctime, reverse=True)
 
-    with open(logfiles[0], "r") as f:
+    with open(logfiles[0], "rb") as f:
         loglines = tail(f)
         for line in loglines:
             pattern = ".*?[NetworkManager] OnPlayerJoined.*"
