@@ -4,6 +4,12 @@
 - VRCのログを見て特定のイベント時に音を鳴らすやつ
 
 ## 利用方法
+### 依存パッケージ
+- pyyaml
+```
+$ pip install pyyaml
+```
+
 ### pythonで実行
 - vrc_joined_bell.pyと同じ階層に設定ファイル`notice.yml`を配置して以下のコマンドを実行
 ```
