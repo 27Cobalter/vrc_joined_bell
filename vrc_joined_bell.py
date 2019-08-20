@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
-    logfiles.sort(key=os.path.getmtime, reverse=True)
+    logfiles.sort(key=os.path.getctime, reverse=True)
 
     with open(logfiles[0], "r") as f:
         loglines = tail(f)
