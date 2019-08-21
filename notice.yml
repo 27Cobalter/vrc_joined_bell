@@ -1,4 +1,4 @@
-".*?Received Notification:.*?type:invite.*": "sousd.wav"
-".*?Received Notification:.*?type:requestInvite.*": "sound.wav"
-".*?\\[NetworkManager\\] OnPlayerJoined .*": "sound.wav"
-".*?\\[NetworkManager\\] OnPlayerLeft .*": "sound.wav"
+".*?Received Notification:.*?type:invite.*": "invite.wav"
+".*?Received Notification:.*?type:requestInvite.*": "reqInvite.wav"
+".*?\\[NetworkManager\\] OnPlayerJoined .*": "playerJoined.wav"
+".*?\\[NetworkManager\\] OnPlayerLeft .*": "playerLeft.wav"
