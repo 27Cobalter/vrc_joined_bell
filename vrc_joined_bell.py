@@ -38,11 +38,14 @@ if __name__ == "__main__":
         )
 
         for line in loglines:
+            logtime = timereg.match(line)
+            if not logtime:
+                continue
             for pattern, item in data.items():
-                logtime = timereg.match(line)
-                if logtime and logtime.group(1) != item[0] and item[1].match(line):
+                if item[1].match(line) and logtime.group(1) != item[0]:
                     print(line)
                     item[0] = logtime.group(1)
                     with open(item[2], "rb") as f:
                         sound = f.read()
                     winsound.PlaySound(sound, winsound.SND_MEMORY)
+                    break
