@@ -25,3 +25,12 @@ jobs:
       run: |
         python -m pip install PyInstaller
         pyinstaller.exe vrc_joined_bell.py -F
+    - name: Achive to zip
+      run: |
+        zip -r vrc_joined_bell.zip
+    - uses: bootjp/vrc_joined_bell
+      with:
+        name: vrc_joined_bell.zip
+        path: vrc_joined_bell.zip
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+#        content-type: text/plain # Optional
