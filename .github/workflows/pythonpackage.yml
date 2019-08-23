@@ -29,6 +29,6 @@ jobs:
         zip -r vrc_joined_bell.zip
         ls -la
     - name: Upload release assets
-      run:|
+      run: |
         pip install githubrelease
         githubrelease asset bootjp/vrc_joined_bell upload 1.4 'dist/*'
