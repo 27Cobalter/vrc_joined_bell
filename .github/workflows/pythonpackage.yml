@@ -28,6 +28,7 @@ jobs:
       run: |
         zip -r vrc_joined_bell.zip
         ls -la
+        ls -la dist
     - name: Upload release assets
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
