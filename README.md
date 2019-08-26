@@ -29,7 +29,7 @@ dist以下に実行ファイルが生成されるのでexeファイルと同じ�
 - 例
 ```notice.yml
 # invite
-".*?Received Notification:.*?type:invite.*": "sousd.wav"
+".*?Received Notification:.*?type:invite.*": "sound.wav"
 # requestInvite
 ".*?Received Notification:.*?type:requestInvite.*": "sound.wav"
 # プレイヤー入場時
