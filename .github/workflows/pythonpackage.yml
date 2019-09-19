@@ -26,9 +26,8 @@ jobs:
         pyinstaller.exe vrc_joined_bell.py -F
     - name: Achive to zip
       run: |
+        mv notice.yml dist/notice.yml
         powershell compress-archive dist/vrc_joined_bell.exe dist/vrc_joined_bell.zip
-        ls -la dist
-        ls -la
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
