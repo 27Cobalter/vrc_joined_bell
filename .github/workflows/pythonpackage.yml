@@ -26,7 +26,7 @@ jobs:
         pyinstaller.exe vrc_joined_bell.py -F
     - name: Achive to zip
       run: |
-        powershell compress-archive vrc_joined_bell.exe dist/vrc_joined_bell.zip
+        powershell compress-archive dist/vrc_joined_bell.exe dist/vrc_joined_bell.zip
         ls -la dist
         ls -la
     - name: Release
