@@ -27,6 +27,7 @@ jobs:
     - name: Achive to zip
       run: |
         zip -r vrc_joined_bell.zip
+        mv vrc_joined_bell.zip dist/vrc_joined_bell.zip
         ls -la dist
     - name: Release
       uses: softprops/action-gh-release@v1
