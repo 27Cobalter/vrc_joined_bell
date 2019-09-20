@@ -1,7 +1,9 @@
+import datetime
 import time
 import glob
 import os
 import re
+
 import winsound
 import yaml
 
@@ -16,14 +18,28 @@ def tail(thefile):
         yield line
 
 
+def timerange(start, end):
+    now = datetime.datetime.now().time()
+    if start <= end:
+        return start <= now <= end
+    else:
+        return start <= now or now <= end
+
+
 if __name__ == "__main__":
     with open("notice.yml", "r") as conf:
-        notices = yaml.load(conf, Loader=yaml.SafeLoader)
-    print("load config")
+        config = yaml.load(conf, Loader=yaml.SafeLoader)
+
     data = {}
-    for pattern, soundfile in notices.items():
-        data[pattern] = ["", re.compile(pattern), soundfile]
-        print("  " + pattern + ": " + soundfile)
+    print("events")
+    for notice in config["notices"]:
+        data[notice["event"]] = ["", re.compile(notice["event"]), notice["sound"]]
+        print("  " + notice["event"] + ": " + notice["sound"])
+
+    start = datetime.datetime.strptime(config["time"]["start"], "%H:%M:%S").time()
+    end = datetime.datetime.strptime(config["time"]["end"], "%H:%M:%S").time()
+    print("no notification time ", start, "-", end)
+    exit()
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
@@ -45,7 +61,9 @@ if __name__ == "__main__":
                 if item[1].match(line) and logtime.group(1) != item[0]:
                     print(line.rstrip("\n"))
                     item[0] = logtime.group(1)
-                    with open(item[2], "rb") as f:
-                        sound = f.read()
-                    winsound.PlaySound(sound, winsound.SND_MEMORY)
+
+                    if not timerange(start, end):
+                        with open(item[2], "rb") as f:
+                            sound = f.read()
+                        winsound.PlaySound(sound, winsound.SND_MEMORY)
                     break
