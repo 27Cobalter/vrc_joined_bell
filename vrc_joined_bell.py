@@ -3,7 +3,6 @@ import time
 import glob
 import os
 import re
-
 import winsound
 import yaml
 
@@ -39,7 +38,6 @@ if __name__ == "__main__":
     start = datetime.datetime.strptime(config["time"]["start"], "%H:%M:%S").time()
     end = datetime.datetime.strptime(config["time"]["end"], "%H:%M:%S").time()
     print("no notification time ", start, "-", end)
-    exit()
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
