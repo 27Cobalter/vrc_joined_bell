@@ -25,15 +25,25 @@ $ pyinstaller.exe vrc_joined_bell.py [-F -w]
 dist以下に実行ファイルが生成されるのでexeファイルと同じ階層に設定ファイル`notice.yml`を配置してexeファイルを実行
 
 ## 設定ファイル
-- 取得したいイベントの正規表現(ログファイルでの形式)をkey，再生する音声ファイルのパス(実行ファイルからの相対パス，または絶対パス)をvalueとして`notice.yml`に記述
+- timeのstartとendで通知音を鳴らしたくない時間を設定
+- notices以下に取得したいイベントの正規表現(ログファイルでの形式)をevent，再生する音声ファイルのパス(実行ファイルからの相対パス，または絶対パス)をsoundとして列挙して`notice.yml`に記述
 - 例
 ```notice.yml
+# 通知音を鳴らしたくない時間
+time:
+  start: "00:00:00"
+  end:   "06:00:00"
+notices:
 # invite
-".*?Received Notification:.*?type:invite.*": "sound.wav"
+  - event: ".*?Received Notification:.*?type:invite.*"
+    sound: "invite.wav"
 # requestInvite
-".*?Received Notification:.*?type:requestInvite.*": "sound.wav"
+  - event: ".*?Received Notification:.*?type:requestInvite.*"
+    sound: "reqInvite.wav"
 # プレイヤー入場時
-".*?\\[NetworkManager\\] OnPlayerJoined .*": "D:\\PATH_TO\\sound.wav"
+  - event: ".*?\\[NetworkManager\\] OnPlayerJoined .*"
+    sound: "playerJoined.wav"
 # プレイヤー退出時
-".*?\\[NetworkManager\\] OnPlayerLeft .*": "D:\\PATH_TO\\sound.wav"
+  - event: ".*?\\[NetworkManager\\] OnPlayerLeft .*"
+    sound: "playerLeft.wav"
 ```
