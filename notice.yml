@@ -1,4 +1,12 @@
-".*?Received Notification:.*?type:invite.*": "invite.wav"
-".*?Received Notification:.*?type:requestInvite.*": "reqInvite.wav"
-".*?\\[NetworkManager\\] OnPlayerJoined .*": "playerJoined.wav"
-".*?\\[NetworkManager\\] OnPlayerLeft .*": "playerLeft.wav"
+time:
+  start: "00:00:00"
+  end:   "06:00:00"
+notices:
+  - event: ".*?Received Notification:.*?type:invite.*"
+    sound: "invite.wav"
+  - event: ".*?Received Notification:.*?type:requestInvite.*"
+    sound: "reqInvite.wav"
+  - event: ".*?\\[NetworkManager\\] OnPlayerJoined .*"
+    sound: "playerJoined.wav"
+  - event: ".*?\\[NetworkManager\\] OnPlayerLeft .*"
+    sound: "playerLeft.wav"
