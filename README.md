@@ -3,19 +3,23 @@
 - ~~VRCでワールドに人が入ってきたら音を鳴らすやつ~~
 - VRCのログを見て特定のイベント時に音を鳴らすやつ
 
-## 依存パッケージ
+## ダウンロード
+- https://github.com/27Cobalter/vrc_joined_bell/releases
+
+## 自分で色々やりたい人向け
+### 依存パッケージ
 - pyyaml
 ```
 $ pip install pyyaml
 ```
 
-## 実行方法
-### pythonで実行
+### 実行方法
+#### pythonで実行
 - vrc_joined_bell.pyと同じ階層に設定ファイル`notice.yml`を配置して以下のコマンドを実行
 ```
 $ python vrc_joined_bell.py
 ```
-### 実行ファイル生成
+#### 実行ファイル生成
 ```
 $ pyinstaller.exe vrc_joined_bell.py [-F -w]
   オプションはお好みで
