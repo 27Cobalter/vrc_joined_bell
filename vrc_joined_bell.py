@@ -18,6 +18,8 @@ def tail(thefile):
 
 
 def timerange(start, end):
+    if start == end:
+        return false
     now = datetime.datetime.now().time()
     if start <= end:
         return start <= now <= end
