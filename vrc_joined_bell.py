@@ -63,12 +63,9 @@ if __name__ == "__main__":
                     item[0] = logtime.group(1)
 
                     if not timerange(start, end):
-                        with open(item[2], "rb") as f:
-                            sound = f.read()
                         # todo check reuse pygame.
-                        pygame.init()
                         pygame.mixer.init()
-                        player = pygame.mixer.Sound(sound)
+                        player = pygame.mixer.Sound(item[2])
                         # todo add setting file in time base dynamic volume
                         player.set_volume(1.0)
                         player.play()
