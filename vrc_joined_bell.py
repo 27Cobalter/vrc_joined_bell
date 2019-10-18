@@ -27,6 +27,10 @@ def timerange(start, end):
         return start <= now or now <= end
 
 
+COLUMN_TIME = 0
+COLUMN_EVENT_PATTERN = 1
+COLUMN_SOUND = 2
+
 if __name__ == "__main__":
     with open("notice.yml", "r") as conf:
         config = yaml.load(conf, Loader=yaml.SafeLoader)
@@ -58,14 +62,14 @@ if __name__ == "__main__":
             if not logtime:
                 continue
             for pattern, item in data.items():
-                if item[1].match(line) and logtime.group(1) != item[0]:
+                if item[COLUMN_EVENT_PATTERN].match(line) and logtime.group(1) != item[COLUMN_TIME]:
                     print(line.rstrip("\n"))
-                    item[0] = logtime.group(1)
+                    item[COLUMN_TIME] = logtime.group(1)
 
                     if not timerange(start, end):
                         # todo check reuse pygame.
                         pygame.mixer.init()
-                        player = pygame.mixer.Sound(item[2])
+                        player = pygame.mixer.Sound(item[COLUMN_SOUND])
                         # todo add setting file in time base dynamic volume
                         player.set_volume(1.0)
                         player.play()
