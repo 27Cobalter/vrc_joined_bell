@@ -52,7 +52,7 @@ if __name__ == "__main__":
     end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
     behavior = config["silent_time"]["behavior"]
     volume = config["silent_time"]["volume"]
-    print("no notification time ", start, "-", end)
+    print("sleep time behavior ", behavior, start, "-", end)
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
