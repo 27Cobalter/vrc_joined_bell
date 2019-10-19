@@ -17,7 +17,7 @@ def tail(thefile):
         yield line
 
 
-def timerange(start, end):
+def is_silent_time(start, end):
     if start == end:
         return false
     now = datetime.datetime.now().time()
@@ -25,6 +25,13 @@ def timerange(start, end):
         return start <= now <= end
     else:
         return start <= now or now <= end
+
+
+def play(data_path, volume):
+    pygame.mixer.init()
+    player = pygame.mixer.Sound(data_path)
+    player.set_volume(volume)
+    player.play()
 
 
 COLUMN_TIME = 0
@@ -41,8 +48,10 @@ if __name__ == "__main__":
         data[notice["event"]] = ["", re.compile(notice["event"]), notice["sound"]]
         print("  " + notice["event"] + ": " + notice["sound"])
 
-    start = datetime.datetime.strptime(config["time"]["start"], "%H:%M:%S").time()
-    end = datetime.datetime.strptime(config["time"]["end"], "%H:%M:%S").time()
+    start = datetime.datetime.strptime(config["silent_time"]["start"], "%H:%M:%S").time()
+    end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
+    behavior = config["silent_time"]["behavior"]
+    volume = config["silent_time"]["volume"]
     print("no notification time ", start, "-", end)
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
@@ -65,12 +74,15 @@ if __name__ == "__main__":
                 if item[COLUMN_EVENT_PATTERN].match(line) and logtime.group(1) != item[COLUMN_TIME]:
                     print(line.rstrip("\n"))
                     item[COLUMN_TIME] = logtime.group(1)
+                    silent_time = is_silent_time(start, end)
 
-                    if not timerange(start, end):
-                        # todo check reuse pygame.
-                        pygame.mixer.init()
-                        player = pygame.mixer.Sound(item[COLUMN_SOUND])
-                        # todo add setting file in time base dynamic volume
-                        player.set_volume(1.0)
-                        player.play()
+                    if behavior == "ignore" and silent_time:
+                        continue
+
+                    if behavior == "volume_down" and silent_time:
+                        play_volume = volume
+                    else:
+                        play_volume = 1.0
+
+                    play(item[COLUMN_SOUND], play_volume)
                     break

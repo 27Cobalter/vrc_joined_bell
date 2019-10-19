@@ -1,6 +1,9 @@
-time:
+silent_time:
   start: "00:00:00"
   end:   "06:00:00"
+  behavior: "volume_down" # or ignore
+  volume: 0.05
+
 notices:
   - event: ".*?Received Notification:.*?type:invite.*"
     sound: "invite.wav"
