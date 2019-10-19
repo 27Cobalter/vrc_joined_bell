@@ -77,7 +77,7 @@ if __name__ == "__main__":
                     silent_time = is_silent_time(start, end)
 
                     if behavior == "ignore" and silent_time:
-                        continue
+                        break
 
                     if behavior == "volume_down" and silent_time:
                         play_volume = volume
