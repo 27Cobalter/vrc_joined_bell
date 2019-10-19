@@ -19,7 +19,7 @@ def tail(thefile):
 
 def is_silent_time(start, end):
     if start == end:
-        return false
+        return False
     now = datetime.datetime.now().time()
     if start <= end:
         return start <= now <= end
