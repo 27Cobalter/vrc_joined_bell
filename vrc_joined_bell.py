@@ -28,10 +28,10 @@ def is_silent_time(start, end):
 
 
 def play(data_path, volume):
-    pygame.mixer.init()
-    player = pygame.mixer.Sound(data_path)
-    player.set_volume(volume)
-    player.play()
+    pygame.mixer.init(frequency=24000)
+    pygame.mixer.music.load(data_path)
+    pygame.mixer.music.set_volume(volume)
+    pygame.mixer.music.play()
 
 
 COLUMN_TIME = 0
