@@ -3,6 +3,8 @@ import time
 import glob
 import os
 import re
+import wave
+
 import pygame
 import yaml
 
@@ -28,10 +30,12 @@ def is_silent_time(start, end):
 
 
 def play(data_path, volume):
-    pygame.mixer.init(frequency=24000)
-    pygame.mixer.music.load(data_path)
-    pygame.mixer.music.set_volume(volume)
-    pygame.mixer.music.play()
+    with wave.open(data_path, "rb") as wave_file:
+        frame_rate = wave_file.getframerate()
+    pygame.mixer.init(frequency=frame_rate)
+    player = pygame.mixer.Sound(data_path)
+    player.set_volume(volume)
+    player.play()
 
 
 COLUMN_TIME = 0
