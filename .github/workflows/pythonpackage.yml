@@ -19,7 +19,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip pyyaml
+        python -m pip install --upgrade pip pyyaml pygame
     - name: Build as binary
       run: |
         python -m pip install PyInstaller

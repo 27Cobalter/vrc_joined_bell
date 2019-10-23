@@ -3,7 +3,9 @@ import time
 import glob
 import os
 import re
-import winsound
+import wave
+
+import pygame
 import yaml
 
 
@@ -17,15 +19,28 @@ def tail(thefile):
         yield line
 
 
-def timerange(start, end):
+def is_silent_time(start, end):
     if start == end:
-        return false
+        return False
     now = datetime.datetime.now().time()
     if start <= end:
         return start <= now <= end
     else:
         return start <= now or now <= end
 
+
+def play(data_path, volume):
+    with wave.open(data_path, "rb") as wave_file:
+        frame_rate = wave_file.getframerate()
+    pygame.mixer.init(frequency=frame_rate)
+    player = pygame.mixer.Sound(data_path)
+    player.set_volume(volume)
+    player.play()
+
+
+COLUMN_TIME = 0
+COLUMN_EVENT_PATTERN = 1
+COLUMN_SOUND = 2
 
 if __name__ == "__main__":
     with open("notice.yml", "r") as conf:
@@ -37,9 +52,11 @@ if __name__ == "__main__":
         data[notice["event"]] = ["", re.compile(notice["event"]), notice["sound"]]
         print("  " + notice["event"] + ": " + notice["sound"])
 
-    start = datetime.datetime.strptime(config["time"]["start"], "%H:%M:%S").time()
-    end = datetime.datetime.strptime(config["time"]["end"], "%H:%M:%S").time()
-    print("no notification time ", start, "-", end)
+    start = datetime.datetime.strptime(config["silent_time"]["start"], "%H:%M:%S").time()
+    end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
+    behavior = config["silent_time"]["behavior"]
+    volume = config["silent_time"]["volume"]
+    print("sleep time behavior ", behavior, start, "-", end)
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
@@ -58,12 +75,18 @@ if __name__ == "__main__":
             if not logtime:
                 continue
             for pattern, item in data.items():
-                if item[1].match(line) and logtime.group(1) != item[0]:
+                if item[COLUMN_EVENT_PATTERN].match(line) and logtime.group(1) != item[COLUMN_TIME]:
                     print(line.rstrip("\n"))
-                    item[0] = logtime.group(1)
+                    item[COLUMN_TIME] = logtime.group(1)
+                    silent_time = is_silent_time(start, end)
 
-                    if not timerange(start, end):
-                        with open(item[2], "rb") as f:
-                            sound = f.read()
-                        winsound.PlaySound(sound, winsound.SND_MEMORY)
+                    if behavior == "ignore" and silent_time:
+                        break
+
+                    if behavior == "volume_down" and silent_time:
+                        play_volume = volume
+                    else:
+                        play_volume = 1.0
+
+                    play(item[COLUMN_SOUND], play_volume)
                     break
