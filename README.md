@@ -10,7 +10,7 @@
 ### 依存パッケージ
 - pyyaml
 ```
-$ pip install pyyaml
+$ pip install pyyaml pygame
 ```
 
 ### 実行方法
