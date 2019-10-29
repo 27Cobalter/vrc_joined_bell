@@ -111,6 +111,7 @@ if __name__ == "__main__":
                         play_volume = 1.0
 
                     if "cevio" in config and len(item) == 4:
+                        talker.Volume = play_volume * 100
                         state = talker.Speak(match.group(1) + item[COLUMN_MESSAGE])
                         state.Wait()
                     else:
