@@ -12,6 +12,14 @@
 ```
 $ pip install pyyaml
 ```
+- pygame
+```
+$ pip install pygame
+```
+- pythonnet(CeVIOを動かすとき)
+```
+$ pip install pythonnet
+```
 
 ### 実行方法
 #### pythonで実行

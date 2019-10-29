@@ -66,6 +66,9 @@ if __name__ == "__main__":
 
     if "cevio" in config:
         import clr
+        import sys
+
+        sys.path.append(os.path.dirname(".\\"))
 
         clr.AddReference("CeVIO.Talk.RemoteService")
         import CeVIO.Talk.RemoteService as cs
