@@ -22,6 +22,7 @@ $ pip install pythonnet
 ```
 
 ### 実行方法
+- CeVIOのDLLが32bitのためCeVIOの使用時には32bit版pythonを利用する必要あり
 #### pythonで実行
 - vrc_joined_bell.pyと同じ階層に設定ファイル`notice.yml`を配置して以下のコマンドを実行
 - CeVIO使用時はカレントディレクトリにCeVIOのDLLを配置(`CeVIO.Talk.RemoteService.DLL`) デフォルトでは`C:\Program Files (x86)\CeVIO\CeVIO Creative Studio\CeVIO.Talk.RemoteService.DLL`に配置
