@@ -16,5 +16,5 @@ notices:
     sound: "playerLeft.wav"
     message: "‚³‚ñ‚ª‘Şo‚µ‚Ü‚µ‚½"
 
-cevio:
-  cast: "IA"
+# cevio:
+#   cast: "IA"
