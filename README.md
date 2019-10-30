@@ -25,7 +25,6 @@ $ pip install pythonnet
 ### 実行方法
 #### pythonで実行
 - `vrc_joined_bell.py`と同じ階層に設定ファイル`notice.yml`を配置して以下のコマンドを実行
-- CeVIO使用時はカレントディレクトリにCeVIOのDLLを配置(`CeVIO.Talk.RemoteService.DLL`) デフォルトでは`C:\Program Files (x86)\CeVIO\CeVIO Creative Studio\CeVIO.Talk.RemoteService.DLL`においてあります
 ```
 $ python vrc_joined_bell.py
 ```
@@ -39,6 +38,7 @@ dist以下に実行ファイルが生成されるのでexeファイルと同じ�
 - silent_timeのstartとendで通知音を鳴らしたくない時間を設定
 - notices以下に取得したいイベントの正規表現(ログファイルでの形式)をevent，再生する音声ファイルのパス(実行ファイルからの相対パス，または絶対パス)をsoundとして列挙して`notice.yml`に記述
 - CeVIO使用時はmessageを定義することで`正規表現の1つめのグループ`+`message`が再生される
+- dllにCeVIOのDLL(`CeVIO.Talk.RemoteService.DLL`)が配置してあるディレクトリを指定 デフォルトでは`C:\Program Files (x86)\CeVIO\CeVIO Creative Studio`
 - 例
 ```notice.yml
 # 通知音を鳴らしたくない時間
@@ -65,4 +65,5 @@ notices:
 # CeVIOを使う場合に記述
 # cevio:
 #   cast: 'IA'
+#   dll: 'C:\Program Files (x86)\CeVIO\CeVIO Creative Studio'
 ```
