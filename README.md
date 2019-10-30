@@ -55,11 +55,11 @@ notices:
   - event: '.*?Received Notification:.*?type:requestInvite.*'
     sound: 'reqInvite.wav'
 # プレイヤー入場時
-  - event: '.*?\\[NetworkManager\\] OnPlayerJoined (.*)'
+  - event: '.*?\[NetworkManager\] OnPlayerJoined (.*)'
     sound: 'playerJoined.wav'
     message: 'さんが入室しました'
 # プレイヤー退出時
-  - event: '.*?\\[NetworkManager\\] OnPlayerLeft (.*)'
+  - event: '.*?\[NetworkManager\] OnPlayerLeft (.*)'
     sound: 'playerLeft.wav'
     message: 'さんが退出しました'
 # CeVIOを使う場合に記述
