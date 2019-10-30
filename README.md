@@ -31,10 +31,7 @@ $ python vrc_joined_bell.py
 ```
 #### 実行ファイル生成
 ```
-$ pyinstaller.exe vrc_joined_bell.py [-F -w]
-  オプションはお好みで
-  -F : ファイルを1つにまとめる
-  -w : 実行時にウィンドウを表示しない(タスクマネージャーからkill)
+$ pyinstaller.exe vrc_joined_bell.py -F --hidden-import=clr
 ```
 dist以下に実行ファイルが生成されるのでexeファイルと同じ階層に設定ファイル`notice.yml`を配置してexeファイルを実行
 
