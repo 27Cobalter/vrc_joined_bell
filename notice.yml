@@ -1,20 +1,20 @@
 silent_time:
-  start: "00:00:00"
-  end:   "06:00:00"
-  behavior: "volume_down" # or ignore
+  start: '00:00:00'
+  end:   '06:00:00'
+  behavior: 'volume_down' # or ignore
   volume: 0.05
 
 notices:
-  - event: ".*?Received Notification:.*?type:invite.*"
-    sound: "invite.wav"
-  - event: ".*?Received Notification:.*?type:requestInvite.*"
-    sound: "reqInvite.wav"
-  - event: ".*?\\[NetworkManager\\] OnPlayerJoined (.*)"
-    sound: "playerJoined.wav"
-    message: "‚³‚ñ‚ª“üº‚µ‚Ü‚µ‚½"
-  - event: ".*?\\[NetworkManager\\] OnPlayerLeft (.*)"
-    sound: "playerLeft.wav"
-    message: "‚³‚ñ‚ª‘Şo‚µ‚Ü‚µ‚½"
+  - event: '.*?Received Notification:.*?type:invite.*'
+    sound: 'invite.wav'
+  - event: '.*?Received Notification:.*?type:requestInvite.*'
+    sound: 'reqInvite.wav'
+  - event: '.*?\[NetworkManager\] OnPlayerJoined (.*)'
+    sound: 'playerJoined.wav'
+    message: '‚³‚ñ‚ª“üº‚µ‚Ü‚µ‚½'
+  - event: '.*?\[NetworkManager\] OnPlayerLeft (.*)'
+    sound: 'playerLeft.wav'
+    message: '‚³‚ñ‚ª‘Şo‚µ‚Ü‚µ‚½'
 
 # cevio:
-#   cast: "IA"
+#   cast: 'IA'
