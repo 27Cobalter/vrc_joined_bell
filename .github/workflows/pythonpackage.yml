@@ -17,16 +17,17 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+        architecture: x86
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip pyyaml pygame
+        python -m pip install --upgrade pip pyyaml pygame pythonnet
     - name: Build as binary
       run: |
         python -m pip install PyInstaller
-        pyinstaller.exe vrc_joined_bell.py -F
+        pyinstaller.exe vrc_joined_bell.py -F --hidden-import=clr
     - name: Achive to zip
       run: |
-        powershell compress-archive -Path dist/vrc_joined_bell.exe,notice.yml -DestinationPath dist/vrc_joined_bell.zip
+        powershell compress-archive -Path dist/vrc_joined_bell.exe,notice.yml,invite.wav,playerJoined.wav,playerLeft.wav,reqInvite.wav -DestinationPath dist/vrc_joined_bell.zip
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
