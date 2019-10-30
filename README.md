@@ -43,26 +43,26 @@ dist以下に実行ファイルが生成されるのでexeファイルと同じ�
 ```notice.yml
 # 通知音を鳴らしたくない時間
 silent_time:
-  start: "00:00:00"
-  end:   "06:00:00"
+  start: '00:00:00'
+  end:   '06:00:00'
   behavior: "volume_down" # or ignore
   volume: 0.05
 notices:
 # invite
-  - event: ".*?Received Notification:.*?type:invite.*"
-    sound: "invite.wav"
+  - event: '.*?Received Notification:.*?type:invite.*'
+    sound: 'invite.wav'
 # requestInvite
-  - event: ".*?Received Notification:.*?type:requestInvite.*"
-    sound: "reqInvite.wav"
+  - event: '.*?Received Notification:.*?type:requestInvite.*'
+    sound: 'reqInvite.wav'
 # プレイヤー入場時
-  - event: ".*?\\[NetworkManager\\] OnPlayerJoined (.*)"
-    sound: "playerJoined.wav"
-    message: "さんが入室しました"
+  - event: '.*?\\[NetworkManager\\] OnPlayerJoined (.*)'
+    sound: 'playerJoined.wav'
+    message: 'さんが入室しました'
 # プレイヤー退出時
-  - event: ".*?\\[NetworkManager\\] OnPlayerLeft (.*)"
-    sound: "playerLeft.wav"
-    message: "さんが退出しました"
+  - event: '.*?\\[NetworkManager\\] OnPlayerLeft (.*)'
+    sound: 'playerLeft.wav'
+    message: 'さんが退出しました'
 # CeVIOを使う場合に記述
 # cevio:
-#   cast: "IA"
+#   cast: 'IA'
 ```
