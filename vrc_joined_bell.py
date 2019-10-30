@@ -64,20 +64,28 @@ if __name__ == "__main__":
     volume = config["silent_time"]["volume"]
     print("sleep time behavior ", behavior, start, "-", end)
 
+    enableCevio = False
     if "cevio" in config:
         import clr
         import sys
 
-        sys.path.append(os.path.dirname(".\\"))
+        try:
+            sys.path.append(os.path.abspath(config["cevio"]["dll"]))
 
-        clr.AddReference("CeVIO.Talk.RemoteService")
-        import CeVIO.Talk.RemoteService as cs
+            print("CeVIO dll:", config["cevio"]["dll"])
+            clr.AddReference("CeVIO.Talk.RemoteService")
+            import CeVIO.Talk.RemoteService as cs
 
-        cs.ServiceControl.StartHost(False)
-        talker = cs.Talker()
-        talker.Cast = config["cevio"]["cast"]
-        talker.Volume = 100
-        print("cast:", config["cevio"]["cast"])
+            cs.ServiceControl.StartHost(False)
+            talker = cs.Talker()
+            talker.Cast = config["cevio"]["cast"]
+            talker.Volume = 100
+            enableCevio = True
+            print("cast:", config["cevio"]["cast"])
+        except:
+            import traceback
+
+            traceback.print_exc()
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
@@ -110,7 +118,7 @@ if __name__ == "__main__":
                     else:
                         play_volume = 1.0
 
-                    if "cevio" in config and len(item) == 4:
+                    if enableCevio and len(item) == 4:
                         talker.Volume = play_volume * 100
                         state = talker.Speak(match.group(1) + item[COLUMN_MESSAGE])
                         state.Wait()
