@@ -9,7 +9,12 @@ notices:
     sound: "invite.wav"
   - event: ".*?Received Notification:.*?type:requestInvite.*"
     sound: "reqInvite.wav"
-  - event: ".*?\\[NetworkManager\\] OnPlayerJoined .*"
+  - event: ".*?\\[NetworkManager\\] OnPlayerJoined (.*)"
     sound: "playerJoined.wav"
-  - event: ".*?\\[NetworkManager\\] OnPlayerLeft .*"
+    message: "‚³‚ñ‚ª“üº‚µ‚Ü‚µ‚½"
+  - event: ".*?\\[NetworkManager\\] OnPlayerLeft (.*)"
     sound: "playerLeft.wav"
+    message: "‚³‚ñ‚ª‘Şo‚µ‚Ü‚µ‚½"
+
+# cevio:
+#   cast: "IA"

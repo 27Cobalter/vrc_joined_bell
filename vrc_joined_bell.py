@@ -41,6 +41,7 @@ def play(data_path, volume):
 COLUMN_TIME = 0
 COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
+COLUMN_MESSAGE = 3
 
 if __name__ == "__main__":
     with open("notice.yml", "r") as conf:
@@ -51,12 +52,32 @@ if __name__ == "__main__":
     for notice in config["notices"]:
         data[notice["event"]] = ["", re.compile(notice["event"]), notice["sound"]]
         print("  " + notice["event"] + ": " + notice["sound"])
+        if "message" in notice:
+            data[notice["event"]].append(notice["message"])
+            print("        " + notice["message"])
 
-    start = datetime.datetime.strptime(config["silent_time"]["start"], "%H:%M:%S").time()
+    start = datetime.datetime.strptime(
+        config["silent_time"]["start"], "%H:%M:%S"
+    ).time()
     end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
     behavior = config["silent_time"]["behavior"]
     volume = config["silent_time"]["volume"]
     print("sleep time behavior ", behavior, start, "-", end)
+
+    if "cevio" in config:
+        import clr
+        import sys
+
+        sys.path.append(os.path.dirname(".\\"))
+
+        clr.AddReference("CeVIO.Talk.RemoteService")
+        import CeVIO.Talk.RemoteService as cs
+
+        cs.ServiceControl.StartHost(False)
+        talker = cs.Talker()
+        talker.Cast = config["cevio"]["cast"]
+        talker.Volume = 100
+        print("cast:", config["cevio"]["cast"])
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
@@ -75,7 +96,8 @@ if __name__ == "__main__":
             if not logtime:
                 continue
             for pattern, item in data.items():
-                if item[COLUMN_EVENT_PATTERN].match(line) and logtime.group(1) != item[COLUMN_TIME]:
+                match = item[COLUMN_EVENT_PATTERN].match(line)
+                if match and logtime.group(1) != item[COLUMN_TIME]:
                     print(line.rstrip("\n"))
                     item[COLUMN_TIME] = logtime.group(1)
                     silent_time = is_silent_time(start, end)
@@ -88,5 +110,10 @@ if __name__ == "__main__":
                     else:
                         play_volume = 1.0
 
-                    play(item[COLUMN_SOUND], play_volume)
+                    if "cevio" in config and len(item) == 4:
+                        talker.Volume = play_volume * 100
+                        state = talker.Speak(match.group(1) + item[COLUMN_MESSAGE])
+                        state.Wait()
+                    else:
+                        play(item[COLUMN_SOUND], play_volume)
                     break
