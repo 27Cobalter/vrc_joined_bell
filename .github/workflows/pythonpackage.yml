@@ -27,7 +27,7 @@ jobs:
         pyinstaller.exe vrc_joined_bell.py -F --hidden-import=clr
     - name: Achive to zip
       run: |
-        powershell compress-archive -Path dist/vrc_joined_bell.exe,notice.yml -DestinationPath dist/vrc_joined_bell.zip
+        powershell compress-archive -Path dist/vrc_joined_bell.exe,notice.yml,invite.wav,playerJoined.wav,playerLeft.wav,reqInvite.wav -DestinationPath dist/vrc_joined_bell.zip
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
