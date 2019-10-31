@@ -18,4 +18,5 @@ notices:
 
 # cevio:
 #   cast: 'IA'
+#   max_phonemes: 16
 #   dll: 'C:\Program Files (x86)\CeVIO\CeVIO Creative Studio'
