@@ -120,8 +120,16 @@ if __name__ == "__main__":
 
                     if enableCevio and len(item) == 4:
                         talker.Volume = play_volume * 100
-                        state = talker.Speak(match.group(1) + item[COLUMN_MESSAGE])
-                        state.Wait()
-                    else:
-                        play(item[COLUMN_SOUND], play_volume)
+                        group = re.sub(r'[-―]','',match.group(1))
+                        if (
+
+                            len(talker.GetPhonemes(group)) != 0
+                            and len(talker.GetPhonemes(group))
+                            <= config["cevio"]["max_phonemes"]
+                        ):
+                            state = talker.Speak(group + item[COLUMN_MESSAGE])
+                            state.Wait()
+                            break
+
+                    play(item[COLUMN_SOUND], play_volume)
                     break

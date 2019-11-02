@@ -5,10 +5,12 @@ silent_time:
   volume: 0.05
 
 notices:
-  - event: '.*?Received Notification:.*?type:invite.*'
+  - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:invite.*'
     sound: 'invite.wav'
-  - event: '.*?Received Notification:.*?type:requestInvite.*'
+    message: 'さんからインバイトが届きました'
+  - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:requestInvite.*'
     sound: 'reqInvite.wav'
+    message: 'さんからリクエストインバイトが届きました'
   - event: '.*?\[NetworkManager\] OnPlayerJoined (.*)'
     sound: 'playerJoined.wav'
     message: 'さんが入室しました'
@@ -16,6 +18,7 @@ notices:
     sound: 'playerLeft.wav'
     message: 'さんが退出しました'
 
-# cevio:
-#   cast: 'IA'
-#   dll: 'C:\Program Files (x86)\CeVIO\CeVIO Creative Studio'
+cevio:
+  cast: 'IA'
+  max_phonemes: 16
+  dll: 'C:\Program Files (x86)\CeVIO\CeVIO Creative Studio'

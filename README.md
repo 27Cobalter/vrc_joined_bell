@@ -65,5 +65,6 @@ notices:
 # CeVIOを使う場合に記述
 # cevio:
 #   cast: 'IA'
+#   max_phonemes: 16 # マッチしたグループの音素の数がこれ以下のときCeVIOで読む
 #   dll: 'C:\Program Files (x86)\CeVIO\CeVIO Creative Studio'
 ```
