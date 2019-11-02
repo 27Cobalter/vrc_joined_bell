@@ -18,7 +18,7 @@ notices:
     sound: 'playerLeft.wav'
     message: 'Ç≥ÇÒÇ™ëﬁèoÇµÇ‹ÇµÇΩ'
 
-# cevio:
-#   cast: 'IA'
-#   max_phonemes: 16
-#   dll: 'C:\Program Files (x86)\CeVIO\CeVIO Creative Studio'
+cevio:
+  cast: 'IA'
+  max_phonemes: 16
+  dll: 'C:\Program Files (x86)\CeVIO\CeVIO Creative Studio'
