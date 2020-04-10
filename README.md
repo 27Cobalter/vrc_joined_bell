@@ -9,7 +9,8 @@
 - https://github.com/27Cobalter/vrc_joined_bell/releases
 
 ## 自分で色々やりたい人向け
-- CeVIOのDLLが32bitのためCeVIOの使用時には32bit版pythonを利用する必要あり
+- ~~CeVIOのDLLが32bitのためCeVIOの使用時には32bit版pythonを利用する必要あり~~
+- CS7より64bit対応
 ### 依存パッケージ
 - pyyaml
 ```
@@ -68,5 +69,5 @@ notices:
 # cevio:
 #   cast: 'IA'
 #   max_phonemes: 16 # マッチしたグループの音素の数がこれ以下のときCeVIOで読む
-#   dll: 'C:\Program Files (x86)\CeVIO\CeVIO Creative Studio'
+#   dll: 'C:\Program Files\CeVIO\CeVIO Creative Studio (64bit)'
 ```
