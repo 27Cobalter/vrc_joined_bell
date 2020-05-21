@@ -1,4 +1,6 @@
 # vrc_joined_bell
+# 注意
+- 4/2のアップデートでデフォルトで`OnPlayerJoined`, `OnPlayerLeft`が出力されなくなったためSteamから`プロパティ->起動オプションを設定`を開いて`--enable-sdk-log-levels`を追加してください
 ## これは何
 - ~~VRCでワールドに人が入ってきたら音を鳴らすやつ~~
 - VRCのログを見て特定のイベント時に音を鳴らすやつ
@@ -7,7 +9,8 @@
 - https://github.com/27Cobalter/vrc_joined_bell/releases
 
 ## 自分で色々やりたい人向け
-- CeVIOのDLLが32bitのためCeVIOの使用時には32bit版pythonを利用する必要あり
+- ~~CeVIOのDLLが32bitのためCeVIOの使用時には32bit版pythonを利用する必要あり~~
+- CS7より64bit対応
 ### 依存パッケージ
 - pyyaml
 ```
@@ -38,7 +41,7 @@ dist以下に実行ファイルが生成されるのでexeファイルと同じ�
 - silent_timeのstartとendで通知音を鳴らしたくない時間を設定
 - notices以下に取得したいイベントの正規表現(ログファイルでの形式)をevent，再生する音声ファイルのパス(実行ファイルからの相対パス，または絶対パス)をsoundとして列挙して`notice.yml`に記述
 - CeVIO使用時はmessageを定義することで`正規表現の1つめのグループ`+`message`が再生される
-- dllにCeVIOのDLL(`CeVIO.Talk.RemoteService.DLL`)が配置してあるディレクトリを指定 デフォルトでは`C:\Program Files (x86)\CeVIO\CeVIO Creative Studio`
+- dllにCeVIOのDLL(`CeVIO.Talk.RemoteService.DLL`)が配置してあるディレクトリを指定 デフォルトでは`C:\Program Files\CeVIO\CeVIO Creative Studio (64bit)`
 - 例
 ```notice.yml
 # 通知音を鳴らしたくない時間
@@ -55,16 +58,16 @@ notices:
   - event: '.*?Received Notification:.*?type:requestInvite.*'
     sound: 'reqInvite.wav'
 # プレイヤー入場時
-  - event: '.*?\\[NetworkManager\\] OnPlayerJoined (.*)'
+  - event: '.*?\[NetworkManager\] OnPlayerJoined (.*)'
     sound: 'playerJoined.wav'
     message: 'さんが入室しました'
 # プレイヤー退出時
-  - event: '.*?\\[NetworkManager\\] OnPlayerLeft (.*)'
+  - event: '.*?\[NetworkManager\] OnPlayerLeft (.*)'
     sound: 'playerLeft.wav'
     message: 'さんが退出しました'
 # CeVIOを使う場合に記述
 # cevio:
 #   cast: 'IA'
 #   max_phonemes: 16 # マッチしたグループの音素の数がこれ以下のときCeVIOで読む
-#   dll: 'C:\Program Files (x86)\CeVIO\CeVIO Creative Studio'
+#   dll: 'C:\Program Files\CeVIO\CeVIO Creative Studio (64bit)'
 ```
