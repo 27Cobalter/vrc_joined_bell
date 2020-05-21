@@ -12,11 +12,14 @@ import yaml
 def tail(thefile):
     thefile.seek(0, 2)
     while True:
-        line = thefile.readline()
-        if not line:
-            time.sleep(0.5)
+        try:
+            line = thefile.readline()
+            if not line:
+                time.sleep(0.5)
+                continue
+            yield line
+        except UnicodeDecodeError:
             continue
-        yield line
 
 
 def is_silent_time(start, end):
