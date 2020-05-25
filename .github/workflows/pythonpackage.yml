@@ -27,7 +27,7 @@ jobs:
     - name: Build as binary
       run: |
         python -m pip install PyInstaller
-        pyinstaller.exe vrc_joined_bell.py -F --hidden-import=clr
+        pyinstaller.exe vrc_joined_bell.py --version-file "version.txt" -F --hidden-import=clr
     - name: Achive to zip
       run: |
         powershell compress-archive -Path dist/vrc_joined_bell.exe,notice.yml,invite.wav,playerJoined.wav,playerLeft.wav,reqInvite.wav -DestinationPath dist/vrc_joined_bell.zip
