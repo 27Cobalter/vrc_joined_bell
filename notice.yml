@@ -1,15 +1,25 @@
 silent_time:
-  start: "00:00:00"
-  end:   "06:00:00"
-  behavior: "volume_down" # or ignore
+  start: '00:00:00'
+  end:   '06:00:00'
+  behavior: 'volume_down' # or ignore
   volume: 0.05
 
 notices:
-  - event: ".*?Received Notification:.*?type:invite.*"
-    sound: "invite.wav"
-  - event: ".*?Received Notification:.*?type:requestInvite.*"
-    sound: "reqInvite.wav"
-  - event: ".*?\\[NetworkManager\\] OnPlayerJoined .*"
-    sound: "playerJoined.wav"
-  - event: ".*?\\[NetworkManager\\] OnPlayerLeft .*"
-    sound: "playerLeft.wav"
+  - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:invite.*'
+    sound: 'invite.wav'
+    message: 'さんからインバイトが届きました'
+  - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:requestInvite.*'
+    sound: 'reqInvite.wav'
+    message: 'さんからリクエストインバイトが届きました'
+  - event: '.*?\[NetworkManager\] OnPlayerJoined (.*)'
+    sound: 'playerJoined.wav'
+    message: 'さんが入室しました'
+  - event: '.*?\[NetworkManager\] OnPlayerLeft (.*)'
+    sound: 'playerLeft.wav'
+    message: 'さんが退出しました'
+
+# CeVIOを使う場合に記述
+# cevio:
+#   cast: 'IA'
+#   max_phonemes: 16 # マッチしたグループの音素の数がこれ以下のときCeVIOで読む
+#   dll: 'C:\Program Files\CeVIO\CeVIO Creative Studio (64bit)'

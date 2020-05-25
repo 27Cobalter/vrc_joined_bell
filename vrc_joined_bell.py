@@ -41,6 +41,7 @@ def play(data_path, volume):
 COLUMN_TIME = 0
 COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
+COLUMN_MESSAGE = 3
 
 if __name__ == "__main__":
     with open("notice.yml", "r") as conf:
@@ -51,12 +52,40 @@ if __name__ == "__main__":
     for notice in config["notices"]:
         data[notice["event"]] = ["", re.compile(notice["event"]), notice["sound"]]
         print("  " + notice["event"] + ": " + notice["sound"])
+        if "message" in notice:
+            data[notice["event"]].append(notice["message"])
+            print("        " + notice["message"])
 
-    start = datetime.datetime.strptime(config["silent_time"]["start"], "%H:%M:%S").time()
+    start = datetime.datetime.strptime(
+        config["silent_time"]["start"], "%H:%M:%S"
+    ).time()
     end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
     behavior = config["silent_time"]["behavior"]
     volume = config["silent_time"]["volume"]
     print("sleep time behavior ", behavior, start, "-", end)
+
+    enableCevio = False
+    if "cevio" in config:
+        import clr
+        import sys
+
+        try:
+            sys.path.append(os.path.abspath(config["cevio"]["dll"]))
+
+            print("CeVIO dll:", config["cevio"]["dll"])
+            clr.AddReference("CeVIO.Talk.RemoteService")
+            import CeVIO.Talk.RemoteService as cs
+
+            cs.ServiceControl.StartHost(False)
+            talker = cs.Talker()
+            talker.Cast = config["cevio"]["cast"]
+            talker.Volume = 100
+            enableCevio = True
+            print("cast:", config["cevio"]["cast"])
+        except:
+            import traceback
+
+            traceback.print_exc()
 
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
@@ -75,7 +104,8 @@ if __name__ == "__main__":
             if not logtime:
                 continue
             for pattern, item in data.items():
-                if item[COLUMN_EVENT_PATTERN].match(line) and logtime.group(1) != item[COLUMN_TIME]:
+                match = item[COLUMN_EVENT_PATTERN].match(line)
+                if match and logtime.group(1) != item[COLUMN_TIME]:
                     print(line.rstrip("\n"))
                     item[COLUMN_TIME] = logtime.group(1)
                     silent_time = is_silent_time(start, end)
@@ -87,6 +117,18 @@ if __name__ == "__main__":
                         play_volume = volume
                     else:
                         play_volume = 1.0
+
+                    if enableCevio and len(item) == 4:
+                        talker.Volume = play_volume * 100
+                        group = re.sub(r"[-―]", "", match.group(1))
+                        if (
+                            len(talker.GetPhonemes(group)) != 0
+                            and len(talker.GetPhonemes(group))
+                            <= config["cevio"]["max_phonemes"]
+                        ):
+                            state = talker.Speak(group + item[COLUMN_MESSAGE])
+                            state.Wait()
+                            break
 
                     play(item[COLUMN_SOUND], play_volume)
                     break
