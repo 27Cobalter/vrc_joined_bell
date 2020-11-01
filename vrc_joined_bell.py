@@ -1,4 +1,3 @@
-import calendar
 import datetime
 import time
 import glob
@@ -24,7 +23,7 @@ def tail(thefile):
 
 
 def is_silent_exclude_days_of_week(exclude_days_of_week):
-    return calendar.day_abbr[datetime.date.today().weekday()] in exclude_days_of_week
+    return datetime.datetime.now().strftime("%a") in exclude_days_of_week
 
 
 def is_silent(config, group):
