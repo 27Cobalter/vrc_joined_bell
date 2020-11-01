@@ -22,7 +22,7 @@ def tail(thefile):
         yield line
 
 
-WEEK_LIST = ['月', '火', '水', '木', '金', '土', '日']
+WEEK_LIST = ["月", "火", "水", "木", "金", "土", "日"]
 
 
 def is_silent_exclude_days_of_week(exclude_days_of_week):
@@ -34,12 +34,8 @@ def is_silent_exclude_days_of_week(exclude_days_of_week):
 
 
 def is_silent(config, group):
-    start = datetime.datetime.strptime(
-        config["silent"]["start"], "%H:%M:%S"
-    ).time()
-    end = datetime.datetime.strptime(
-        config["silent"]["end"], "%H:%M:%S"
-    ).time()
+    start = datetime.datetime.strptime(config["silent"]["start"], "%H:%M:%S").time()
+    end = datetime.datetime.strptime(config["silent"]["end"], "%H:%M:%S").time()
 
     if not is_silent_time(start, end):
         return False
@@ -98,9 +94,7 @@ if __name__ == "__main__":
             data[notice["event"]].append(notice["message"])
             print("        " + notice["message"])
 
-    start = datetime.datetime.strptime(
-        config["silent"]["start"], "%H:%M:%S"
-    ).time()
+    start = datetime.datetime.strptime(config["silent"]["start"], "%H:%M:%S").time()
     end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
     behavior = config["silent"]["behavior"]
     volume = config["silent"]["volume"]
@@ -164,9 +158,9 @@ if __name__ == "__main__":
                     if enableCevio and len(item) == 4:
                         talker.Volume = play_volume * 100
                         if (
-                                len(talker.GetPhonemes(group)) != 0
-                                and len(talker.GetPhonemes(group))
-                                <= config["cevio"]["max_phonemes"]
+                            len(talker.GetPhonemes(group)) != 0
+                            and len(talker.GetPhonemes(group))
+                            <= config["cevio"]["max_phonemes"]
                         ):
                             state = talker.Speak(group + item[COLUMN_MESSAGE])
                             state.Wait()
