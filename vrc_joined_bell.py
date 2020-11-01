@@ -5,9 +5,7 @@ import os
 import re
 import wave
 import yaml
-
-if os.getenv("ENV") == "TEST":
-    import freezegun
+import freezegun
 
 # disable pygame version log
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
