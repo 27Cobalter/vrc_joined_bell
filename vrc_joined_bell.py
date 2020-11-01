@@ -4,10 +4,9 @@ import glob
 import os
 import re
 import wave
-
-# disable pygame version log
 import freezegun
 
+# disable pygame version log
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 import pygame
