@@ -28,7 +28,7 @@ $ pip install pythonnet
 ### test 
 ```
 pip install pytest freezegun
-pytest vrc_joined_bell.py 
+ENV=test pytest vrc_joined_bell.py 
 ```
 
 ### 実行方法

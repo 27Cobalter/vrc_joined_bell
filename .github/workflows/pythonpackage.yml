@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
 
     steps:
     - uses: actions/checkout@v1
@@ -24,7 +24,7 @@ jobs:
         architecture: x64
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip pyyaml pygame pythonnet
+        python -m pip install -r requirements.txt
 
     - name: Generate version file
       run: |
