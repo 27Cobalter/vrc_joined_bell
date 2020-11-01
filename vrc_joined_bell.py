@@ -26,7 +26,7 @@ def tail(thefile):
             if line == "\n" or line == "\r\n":
                 continue
             line = line.rstrip("\n")
-            yield line
+            yield repr(line)[1:-1]
         except UnicodeDecodeError:
             thefile.seek(offset, 0)
             time.sleep(0.5)
