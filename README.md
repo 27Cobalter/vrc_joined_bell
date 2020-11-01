@@ -25,6 +25,12 @@ $ pip install pygame
 $ pip install pythonnet
 ```
 
+### test 
+```
+pip install pytest freezegun
+pytest vrc_joined_bell.py 
+```
+
 ### 実行方法
 #### pythonで実行
 - `vrc_joined_bell.py`と同じ階層に設定ファイル`notice.yml`を配置して以下のコマンドを実行
