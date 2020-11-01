@@ -15,12 +15,21 @@ import yaml
 
 def tail(thefile):
     thefile.seek(0, 2)
+    offset = thefile.tell()
     while True:
-        line = thefile.readline()
-        if not line:
+        try:
+            line = thefile.readline()
+            offset = thefile.tell()
+            if not line:
+                time.sleep(0.5)
+                continue
+            if line == "\n" or line == "\r\n":
+                continue
+            line = line.rstrip("\n")
+            yield line
+        except UnicodeDecodeError:
+            thefile.seek(offset, 0)
             time.sleep(0.5)
-            continue
-        yield line
 
 
 def is_silent_exclude_days_of_week(exclude_days_of_week):
@@ -208,7 +217,7 @@ if __name__ == "__main__":
             for pattern, item in data.items():
                 match = item[COLUMN_EVENT_PATTERN].match(line)
                 if match and logtime.group(1) != item[COLUMN_TIME]:
-                    print(line.rstrip("\n"))
+                    print(line)
                     item[COLUMN_TIME] = logtime.group(1)
                     silent_time = is_silent(config, group)
                     group = re.sub(r"[-―]", "", match.group(0))
