@@ -6,6 +6,8 @@ import re
 import wave
 
 # disable pygame version log
+import freezegun
+
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 import pygame
@@ -26,6 +28,12 @@ def is_silent_exclude_days_of_week(exclude_days_of_week):
     return datetime.datetime.now().strftime("%a") in exclude_days_of_week
 
 
+@freezegun.freeze_time("2020-11-01")
+def test_is_silent_exclude_days_of_week():
+    assert is_silent_exclude_days_of_week(["Sun"]) == True
+    assert is_silent_exclude_days_of_week(["Thu"]) == False
+
+
 def is_silent(config, group):
     start = datetime.datetime.strptime(
         config["silent"]["time"]["start"], "%H:%M:%S"
@@ -44,12 +52,63 @@ def is_silent(config, group):
     return True
 
 
+@freezegun.freeze_time("2020-11-01 01:00:00")
+def test_is_silent():
+    config = {
+        "silent": {
+            "time": {
+                "start": "00:00:00",
+                "end": "04:00:00",
+            },
+            "exclude": {
+                "days_of_week": ["Mon"],
+                "match_group": ["27Cobalter"],
+            },
+        }
+    }
+    assert is_silent(config, "bootjp／ぶーと") == True
+
+    config = {
+        "silent": {
+            "time": {
+                "start": "00:00:00",
+                "end": "04:00:00",
+            },
+            "exclude": {
+                "days_of_week": ["Sun"],
+                "match_group": ["27Cobalter"],
+            },
+        }
+    }
+    assert is_silent(config, "bootjp／ぶーと") == False
+
+    config = {
+        "silent": {
+            "time": {
+                "start": "00:00:00",
+                "end": "04:00:00",
+            },
+            "exclude": {
+                "days_of_week": ["Mon"],
+                "match_group": ["bootjp／ぶーと"],
+            },
+        }
+    }
+    assert is_silent(config, "bootjp／ぶーと") == False
+
+
 def is_silent_exclude_event(match_groups, group):
     for match_group in match_groups:
         if match_group == group:
             return True
 
     return False
+
+
+@freezegun.freeze_time("2020-11-01")
+def test_is_silent_exclude_event():
+    assert is_silent_exclude_event(["27Cobalter"], "27Cobalter") == True
+    assert is_silent_exclude_event(["27Cobalter"], "bootjp／ぶーと") == False
 
 
 def is_silent_time(start, end):
@@ -60,6 +119,15 @@ def is_silent_time(start, end):
         return start <= now <= end
     else:
         return start <= now or now <= end
+
+
+@freezegun.freeze_time("2020-11-01 01:00:00")
+def test_is_silent_time():
+    start = datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
+    end = datetime.datetime.strptime("04:00:00", "%H:%M:%S").time()
+    assert is_silent_time(start, end) == True
+    start = datetime.datetime.strptime("02:00:00", "%H:%M:%S").time()
+    assert is_silent_time(start, end) == False
 
 
 def play(data_path, volume):
