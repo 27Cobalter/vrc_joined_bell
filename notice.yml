@@ -1,7 +1,6 @@
 silent:
   behavior: 'volume_down' # or ignore
   volume: 0.05
-  condition: AND
   time:
     start: '00:00:00'
     end:   '06:00:00'
