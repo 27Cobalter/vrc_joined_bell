@@ -168,9 +168,7 @@ if __name__ == "__main__":
     start = datetime.datetime.strptime(
         config["silent"]["time"]["start"], "%H:%M:%S"
     ).time()
-    end = datetime.datetime.strptime(
-        config["silent"]["time"]["end"], "%H:%M:%S"
-    ).time()
+    end = datetime.datetime.strptime(config["silent"]["time"]["end"], "%H:%M:%S").time()
     behavior = config["silent"]["behavior"]
     volume = config["silent"]["volume"]
     print("sleep time behavior ", behavior, start, "-", end)
