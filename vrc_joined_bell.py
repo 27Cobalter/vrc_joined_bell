@@ -211,7 +211,7 @@ if __name__ == "__main__":
                 if match and logtime.group(1) != item[COLUMN_TIME]:
                     print(line.rstrip("\n"))
                     item[COLUMN_TIME] = logtime.group(1)
-                    silent_time = is_silent(config, group, item[COLUMN_MESSAGE])
+                    silent_time = is_silent(config, group)
                     group = re.sub(r"[-―]", "", match.group(0))
 
                     if behavior == "ignore" and silent_time:
