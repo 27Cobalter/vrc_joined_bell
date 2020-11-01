@@ -1,0 +1,4 @@
+pyyaml
+pygame
+pythonnet
+pytest

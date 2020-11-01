@@ -22,6 +22,45 @@ def tail(thefile):
         yield line
 
 
+WEEK_LIST = ['月', '火', '水', '木', '金', '土', '日']
+
+
+def is_silent_exclude_days_of_week(exclude_days_of_week):
+    for days in exclude_days_of_week:
+        if WEEK_LIST[datetime.date.today().weekday()] == days:
+            return True
+
+    return False
+
+
+def is_silent(config, group):
+    start = datetime.datetime.strptime(
+        config["silent_time"]["start"], "%H:%M:%S"
+    ).time()
+    end = datetime.datetime.strptime(
+        config["silent_time"]["end"], "%H:%M:%S"
+    ).time()
+
+    if not is_silent_time(start, end):
+        return False
+
+    if is_silent_exclude_event(config["silent"]["exclude"]["match_group"], group):
+        return False
+
+    if is_silent_exclude_days_of_week(config["silent"]["exclude"]["match_group"]):
+        return False
+
+    return True
+
+
+def is_silent_exclude_event(match_groups, group):
+    for match_group in match_groups:
+        if match_group == group:
+            return True
+
+    return False
+
+
 def is_silent_time(start, end):
     if start == end:
         return False
@@ -111,7 +150,8 @@ if __name__ == "__main__":
                 if match and logtime.group(1) != item[COLUMN_TIME]:
                     print(line.rstrip("\n"))
                     item[COLUMN_TIME] = logtime.group(1)
-                    silent_time = is_silent_time(start, end)
+                    silent_time = is_silent(config, group, item[COLUMN_MESSAGE])
+                    group = re.sub(r"[-―]", "", match.group(0))
 
                     if behavior == "ignore" and silent_time:
                         break
@@ -123,11 +163,10 @@ if __name__ == "__main__":
 
                     if enableCevio and len(item) == 4:
                         talker.Volume = play_volume * 100
-                        group = re.sub(r"[-―]", "", match.group(1))
                         if (
-                            len(talker.GetPhonemes(group)) != 0
-                            and len(talker.GetPhonemes(group))
-                            <= config["cevio"]["max_phonemes"]
+                                len(talker.GetPhonemes(group)) != 0
+                                and len(talker.GetPhonemes(group))
+                                <= config["cevio"]["max_phonemes"]
                         ):
                             state = talker.Speak(group + item[COLUMN_MESSAGE])
                             state.Wait()
