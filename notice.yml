@@ -11,6 +11,7 @@ silent:
       - "“ú"
     match_group: # user
       - 27cobalter
+      - bootjp^‚Ô[‚Æ
 
 notices:
   - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:invite.*'
