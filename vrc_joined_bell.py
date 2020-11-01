@@ -35,10 +35,10 @@ def is_silent_exclude_days_of_week(exclude_days_of_week):
 
 def is_silent(config, group):
     start = datetime.datetime.strptime(
-        config["silent_time"]["start"], "%H:%M:%S"
+        config["silent"]["start"], "%H:%M:%S"
     ).time()
     end = datetime.datetime.strptime(
-        config["silent_time"]["end"], "%H:%M:%S"
+        config["silent"]["end"], "%H:%M:%S"
     ).time()
 
     if not is_silent_time(start, end):
@@ -99,11 +99,11 @@ if __name__ == "__main__":
             print("        " + notice["message"])
 
     start = datetime.datetime.strptime(
-        config["silent_time"]["start"], "%H:%M:%S"
+        config["silent"]["start"], "%H:%M:%S"
     ).time()
     end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
-    behavior = config["silent_time"]["behavior"]
-    volume = config["silent_time"]["volume"]
+    behavior = config["silent"]["behavior"]
+    volume = config["silent"]["volume"]
     print("sleep time behavior ", behavior, start, "-", end)
 
     enableCevio = False
