@@ -169,7 +169,7 @@ if __name__ == "__main__":
         config["silent"]["time"]["start"], "%H:%M:%S"
     ).time()
     end = datetime.datetime.strptime(
-        config["silent_time"]["time"]["end"], "%H:%M:%S"
+        config["silent"]["time"]["end"], "%H:%M:%S"
     ).time()
     behavior = config["silent"]["behavior"]
     volume = config["silent"]["volume"]
