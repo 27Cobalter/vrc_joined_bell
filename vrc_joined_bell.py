@@ -4,6 +4,7 @@ import glob
 import os
 import re
 import wave
+import freezegun
 
 # disable pygame version log
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
@@ -22,6 +23,93 @@ def tail(thefile):
         yield line
 
 
+def is_silent_exclude_days_of_week(exclude_days_of_week):
+    return datetime.datetime.now().strftime("%a") in exclude_days_of_week
+
+
+@freezegun.freeze_time("2020-11-01")
+def test_is_silent_exclude_days_of_week():
+    assert is_silent_exclude_days_of_week(["Sun"]) == True
+    assert is_silent_exclude_days_of_week(["Thu"]) == False
+
+
+def is_silent(config, group):
+    start = datetime.datetime.strptime(
+        config["silent"]["time"]["start"], "%H:%M:%S"
+    ).time()
+    end = datetime.datetime.strptime(config["silent"]["time"]["end"], "%H:%M:%S").time()
+
+    if not is_silent_time(start, end):
+        return False
+
+    if is_silent_exclude_event(config["silent"]["exclude"]["match_group"], group):
+        return False
+
+    if is_silent_exclude_days_of_week(config["silent"]["exclude"]["days_of_week"]):
+        return False
+
+    return True
+
+
+@freezegun.freeze_time("2020-11-01 01:00:00")
+def test_is_silent():
+    config = {
+        "silent": {
+            "time": {
+                "start": "00:00:00",
+                "end": "04:00:00",
+            },
+            "exclude": {
+                "days_of_week": ["Mon"],
+                "match_group": ["27Cobalter"],
+            },
+        }
+    }
+    assert is_silent(config, "bootjp／ぶーと") == True
+
+    config = {
+        "silent": {
+            "time": {
+                "start": "00:00:00",
+                "end": "04:00:00",
+            },
+            "exclude": {
+                "days_of_week": ["Sun"],
+                "match_group": ["27Cobalter"],
+            },
+        }
+    }
+    assert is_silent(config, "bootjp／ぶーと") == False
+
+    config = {
+        "silent": {
+            "time": {
+                "start": "00:00:00",
+                "end": "04:00:00",
+            },
+            "exclude": {
+                "days_of_week": ["Mon"],
+                "match_group": ["bootjp／ぶーと"],
+            },
+        }
+    }
+    assert is_silent(config, "bootjp／ぶーと") == False
+
+
+def is_silent_exclude_event(match_groups, group):
+    for match_group in match_groups:
+        if match_group == group:
+            return True
+
+    return False
+
+
+@freezegun.freeze_time("2020-11-01")
+def test_is_silent_exclude_event():
+    assert is_silent_exclude_event(["27Cobalter"], "27Cobalter") == True
+    assert is_silent_exclude_event(["27Cobalter"], "bootjp／ぶーと") == False
+
+
 def is_silent_time(start, end):
     if start == end:
         return False
@@ -30,6 +118,15 @@ def is_silent_time(start, end):
         return start <= now <= end
     else:
         return start <= now or now <= end
+
+
+@freezegun.freeze_time("2020-11-01 01:00:00")
+def test_is_silent_time():
+    start = datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
+    end = datetime.datetime.strptime("04:00:00", "%H:%M:%S").time()
+    assert is_silent_time(start, end) == True
+    start = datetime.datetime.strptime("02:00:00", "%H:%M:%S").time()
+    assert is_silent_time(start, end) == False
 
 
 def play(data_path, volume):
@@ -60,11 +157,13 @@ if __name__ == "__main__":
             print("        " + notice["message"])
 
     start = datetime.datetime.strptime(
-        config["silent_time"]["start"], "%H:%M:%S"
+        config["silent"]["time"]["start"], "%H:%M:%S"
     ).time()
-    end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
-    behavior = config["silent_time"]["behavior"]
-    volume = config["silent_time"]["volume"]
+    end = datetime.datetime.strptime(
+        config["silent_time"]["time"]["end"], "%H:%M:%S"
+    ).time()
+    behavior = config["silent"]["behavior"]
+    volume = config["silent"]["volume"]
     print("sleep time behavior ", behavior, start, "-", end)
 
     enableCevio = False
@@ -111,7 +210,8 @@ if __name__ == "__main__":
                 if match and logtime.group(1) != item[COLUMN_TIME]:
                     print(line.rstrip("\n"))
                     item[COLUMN_TIME] = logtime.group(1)
-                    silent_time = is_silent_time(start, end)
+                    silent_time = is_silent(config, group)
+                    group = re.sub(r"[-―]", "", match.group(0))
 
                     if behavior == "ignore" and silent_time:
                         break
@@ -123,7 +223,6 @@ if __name__ == "__main__":
 
                     if enableCevio and len(item) == 4:
                         talker.Volume = play_volume * 100
-                        group = re.sub(r"[-―]", "", match.group(1))
                         if (
                             len(talker.GetPhonemes(group)) != 0
                             and len(talker.GetPhonemes(group))

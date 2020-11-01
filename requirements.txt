@@ -1,0 +1,5 @@
+pyyaml
+pygame
+pythonnet
+pytest
+freezegun
