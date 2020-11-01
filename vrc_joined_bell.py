@@ -4,15 +4,15 @@ import glob
 import os
 import re
 import wave
+import yaml
 
-if os.environ["ENV"] == "TEST":
+if os.getenv("ENV") == "TEST":
     import freezegun
 
 # disable pygame version log
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 import pygame
-import yaml
 
 
 def tail(thefile):
