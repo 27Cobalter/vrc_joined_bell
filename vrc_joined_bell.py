@@ -1,3 +1,4 @@
+import calendar
 import datetime
 import time
 import glob
@@ -22,20 +23,15 @@ def tail(thefile):
         yield line
 
 
-WEEK_LIST = ["月", "火", "水", "木", "金", "土", "日"]
-
-
 def is_silent_exclude_days_of_week(exclude_days_of_week):
-    for days in exclude_days_of_week:
-        if WEEK_LIST[datetime.date.today().weekday()] == days:
-            return True
-
-    return False
+    return calendar.day_abbr[datetime.date.today().weekday()] in exclude_days_of_week
 
 
 def is_silent(config, group):
-    start = datetime.datetime.strptime(config["silent"]["start"], "%H:%M:%S").time()
-    end = datetime.datetime.strptime(config["silent"]["end"], "%H:%M:%S").time()
+    start = datetime.datetime.strptime(
+        config["silent"]["time"]["start"], "%H:%M:%S"
+    ).time()
+    end = datetime.datetime.strptime(config["silent"]["time"]["end"], "%H:%M:%S").time()
 
     if not is_silent_time(start, end):
         return False
@@ -43,7 +39,7 @@ def is_silent(config, group):
     if is_silent_exclude_event(config["silent"]["exclude"]["match_group"], group):
         return False
 
-    if is_silent_exclude_days_of_week(config["silent"]["exclude"]["match_group"]):
+    if is_silent_exclude_days_of_week(config["silent"]["exclude"]["days_of_week"]):
         return False
 
     return True
@@ -94,8 +90,12 @@ if __name__ == "__main__":
             data[notice["event"]].append(notice["message"])
             print("        " + notice["message"])
 
-    start = datetime.datetime.strptime(config["silent"]["start"], "%H:%M:%S").time()
-    end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
+    start = datetime.datetime.strptime(
+        config["silent"]["time"]["start"], "%H:%M:%S"
+    ).time()
+    end = datetime.datetime.strptime(
+        config["silent_time"]["time"]["end"], "%H:%M:%S"
+    ).time()
     behavior = config["silent"]["behavior"]
     volume = config["silent"]["volume"]
     print("sleep time behavior ", behavior, start, "-", end)

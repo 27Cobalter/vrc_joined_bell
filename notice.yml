@@ -9,7 +9,7 @@ silent:
       - "“y"
       - "“ú"
     match_group: # user
-      - 27cobalter
+      - 27Cobalter
       - bootjp^‚Ô[‚Æ
 
 notices:
