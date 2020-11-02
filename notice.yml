@@ -6,8 +6,8 @@ silent:
     end:   '06:00:00'
   exclude:
     days_of_week:
-      - "“y"
-      - "“ú"
+      - "Sat"
+      - "Sun"
     match_group: # user
       - 27Cobalter
       - bootjp^‚Ô[‚Æ
