@@ -219,7 +219,7 @@ if __name__ == "__main__":
                     item[COLUMN_TIME] = logtime.group(1)
                     group = ""
                     if len(match.groups()) > 0:
-                        group = re.sub(r"[-―]", "", match.group(1))
+                        group = match.group(1)
                     silent_time = is_silent(config, group)
 
                     if behavior == "ignore" and silent_time:
@@ -232,6 +232,7 @@ if __name__ == "__main__":
 
                     if enableCevio and len(item) == 4:
                         talker.Volume = play_volume * 100
+                        group = re.sub(r"[-―]", "", group)
                         if (
                             len(talker.GetPhonemes(group)) != 0
                             and len(talker.GetPhonemes(group))
