@@ -51,10 +51,14 @@ def is_silent(config, group):
     if not is_silent_time(start, end):
         return False
 
-    if is_silent_exclude_event(config["silent"]["exclude"]["match_group"], group):
+    if "match_group" in config["silent"]["exclude"] and is_silent_exclude_event(
+        config["silent"]["exclude"]["match_group"], group
+    ):
         return False
 
-    if is_silent_exclude_days_of_week(config["silent"]["exclude"]["days_of_week"]):
+    if "days_of_week" in config["silent"]["exclude"] and is_silent_exclude_days_of_week(
+        config["silent"]["exclude"]["days_of_week"]
+    ):
         return False
 
     return True
@@ -103,6 +107,18 @@ def test_is_silent():
         }
     }
     assert is_silent(config, "bootjp／ぶーと") == False
+
+    # test for nothing array.
+    config = {
+        "silent": {
+            "time": {
+                "start": "00:00:00",
+                "end": "04:00:00",
+            },
+            "exclude": {},
+        }
+    }
+    assert is_silent(config, "") == True
 
 
 def is_silent_exclude_event(match_groups, group):
