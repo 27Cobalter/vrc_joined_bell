@@ -1,4 +1,5 @@
 import datetime
+import logging
 import time
 import glob
 import os
@@ -6,6 +7,8 @@ import re
 import wave
 import yaml
 import freezegun
+import threading
+from flask import Flask
 
 # disable pygame version log
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
@@ -43,6 +46,9 @@ def test_is_silent_exclude_days_of_week():
 
 
 def is_silent(config, group):
+    if config["silent"]["toggle_server"] and enable_server_silent:
+        return True
+
     start = datetime.datetime.strptime(
         config["silent"]["time"]["start"], "%H:%M:%S"
     ).time()
@@ -163,6 +169,27 @@ def play(data_path, volume):
     player.play()
 
 
+enable_server_silent = False
+
+
+def toggle_server(host, port):
+    srv = Flask(__name__)
+    log = logging.getLogger('werkzeug')
+    log.disabled = True
+    srv.logger.disabled = True
+
+    print("start toggle server")
+
+    @srv.route('/')
+    def handler():
+        global enable_server_silent
+        enable_server_silent = not enable_server_silent
+
+        return f"STATUS {enable_server_silent}"
+
+    srv.run(host=host, port=port)
+
+
 COLUMN_TIME = 0
 COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
@@ -180,6 +207,15 @@ if __name__ == "__main__":
         if "message" in notice:
             data[notice["event"]].append(notice["message"])
             print("        " + notice["message"])
+
+    if config["silent"]["toggle_server"]:
+        try:
+            thread = threading.Thread(target=toggle_server, args=(config["silent"]["host"], config["silent"]["port"]))
+            thread.start()
+        except:
+            import traceback
+
+            traceback.print_exc()
 
     start = datetime.datetime.strptime(
         config["silent"]["time"]["start"], "%H:%M:%S"

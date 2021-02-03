@@ -1,5 +1,5 @@
 silent:
-  behavior: 'volume_down' # or ignore
+  behavior: 'ignore' # or ignore
   volume: 0.05
   time:
     start: '00:00:00'
@@ -11,6 +11,10 @@ silent:
     match_group: # user
       - 27Cobalter
       - bootjpÅ^Ç‘Å[Ç∆
+
+  toggle_server: on
+  host: 127.0.0.1
+  port: 80
 
 notices:
   - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:invite.*'

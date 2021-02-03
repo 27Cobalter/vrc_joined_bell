@@ -3,3 +3,4 @@ pygame
 pythonnet
 pytest
 freezegun
+flask
