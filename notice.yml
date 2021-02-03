@@ -12,7 +12,7 @@ silent:
       - 27Cobalter
       - bootjpÅ^Ç‘Å[Ç∆
 
-  toggle_server: on
+  toggle_server: off
   host: 127.0.0.1
   port: 80
 
