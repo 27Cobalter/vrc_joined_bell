@@ -12,6 +12,10 @@ silent:
       - 27Cobalter
       - bootjpÅ^Ç‘Å[Ç∆
 
+  toggle_server: off
+  host: 127.0.0.1
+  port: 80
+
 notices:
   - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:invite.*'
     sound: 'invite.wav'
