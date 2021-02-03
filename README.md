@@ -55,7 +55,7 @@ silent:
   # サイレントモードの振る舞いの設定
   # ignore は通知を止める
   # volume_down は音量を下げる
-  behavior: 'ignore' # or ignore
+  behavior: 'volume_down' # or ignore
   # サイレントモード時で volume_down 時の音量の値
   volume: 0.05
   # 時刻でサイレントモードを有効にする時間

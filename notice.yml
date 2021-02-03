@@ -1,5 +1,5 @@
 silent:
-  behavior: 'ignore' # or ignore
+  behavior: 'volume_down' # or ignore
   volume: 0.05
   time:
     start: '00:00:00'
