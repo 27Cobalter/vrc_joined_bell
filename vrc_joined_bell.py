@@ -174,13 +174,13 @@ enable_server_silent = False
 
 def toggle_server(host, port):
     srv = Flask(__name__)
-    log = logging.getLogger('werkzeug')
+    log = logging.getLogger("werkzeug")
     log.disabled = True
     srv.logger.disabled = True
 
     print("start toggle server")
 
-    @srv.route('/')
+    @srv.route("/")
     def handler():
         global enable_server_silent
         enable_server_silent = not enable_server_silent
@@ -210,7 +210,10 @@ if __name__ == "__main__":
 
     if config["silent"]["toggle_server"]:
         try:
-            thread = threading.Thread(target=toggle_server, args=(config["silent"]["host"], config["silent"]["port"]))
+            thread = threading.Thread(
+                target=toggle_server,
+                args=(config["silent"]["host"], config["silent"]["port"]),
+            )
             thread.start()
         except:
             import traceback
