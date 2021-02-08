@@ -4,3 +4,4 @@ pythonnet
 pytest
 freezegun
 flask
+py2exe
