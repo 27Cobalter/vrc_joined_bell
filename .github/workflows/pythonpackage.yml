@@ -12,7 +12,9 @@ jobs:
 
     steps:
     - name: pyinstaller builder
-      run: choco install -y python vcbuildtools
+      run: |
+        choco install -y python --version=3.8.0
+        choco install -y vcbuildtools
 
     - name: Build Pyinstaller
       run: |
