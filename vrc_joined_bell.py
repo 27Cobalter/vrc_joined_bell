@@ -5,7 +5,6 @@ import glob
 import os
 import re
 import wave
-
 import psutil
 import yaml
 import freezegun
