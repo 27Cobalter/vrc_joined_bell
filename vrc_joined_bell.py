@@ -193,11 +193,6 @@ def toggle_server(host, port):
 
 
 def process_kill_by_name(name):
-
-    """
-    :param name:
-    :return: Process
-    """
     for p in psutil.process_iter(attrs=["name"]):
         if p.info["name"] == name:
             p.terminate()
