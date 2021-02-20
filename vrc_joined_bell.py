@@ -186,6 +186,8 @@ def toggle_server(host, port):
         global enable_server_silent
         enable_server_silent = not enable_server_silent
 
+        print(f"silent mode status change to {enable_server_silent} ")
+
         return f"STATUS {enable_server_silent}"
 
     srv.run(host=host, port=port)
@@ -203,7 +205,8 @@ COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
 COLUMN_MESSAGE = 3
 
-if __name__ == "__main__":
+
+def main():
     process_kill_by_name("vrc_joined_bell.exe")
     with open("notice.yml", "r") as conf:
         config = yaml.load(conf, Loader=yaml.SafeLoader)
@@ -308,3 +311,7 @@ if __name__ == "__main__":
 
                     play(item[COLUMN_SOUND], play_volume)
                     break
+
+
+if __name__ == "__main__":
+    main()
