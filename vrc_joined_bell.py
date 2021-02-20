@@ -195,7 +195,8 @@ COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
 COLUMN_MESSAGE = 3
 
-if __name__ == "__main__":
+
+def main():
     with open("notice.yml", "r") as conf:
         config = yaml.load(conf, Loader=yaml.SafeLoader)
 
@@ -299,3 +300,7 @@ if __name__ == "__main__":
 
                     play(item[COLUMN_SOUND], play_volume)
                     break
+
+
+if __name__ == "__main__":
+    main()
