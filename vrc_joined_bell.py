@@ -185,6 +185,8 @@ def toggle_server(host, port):
         global enable_server_silent
         enable_server_silent = not enable_server_silent
 
+        print(f"silent mode status change to {enable_server_silent} ")
+
         return f"STATUS {enable_server_silent}"
 
     srv.run(host=host, port=port)
