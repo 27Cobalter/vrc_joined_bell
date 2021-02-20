@@ -192,8 +192,9 @@ def toggle_server(host, port):
 
 
 def process_kill_by_name(name):
-    for p in psutil.process_iter(attrs=["name"]):
-        if p.info["name"] == name:
+    pid = os.getpid()
+    for p in psutil.process_iter(attrs=["pid", "name"]):
+        if p.info["name"] == name and p.pid != pid:
             p.terminate()
 
 
