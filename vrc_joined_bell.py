@@ -5,6 +5,7 @@ import glob
 import os
 import re
 import wave
+import psutil
 import yaml
 import freezegun
 import threading
@@ -192,6 +193,13 @@ def toggle_server(host, port):
     srv.run(host=host, port=port)
 
 
+def process_kill_by_name(name):
+    pid = os.getpid()
+    for p in psutil.process_iter(attrs=["pid", "name"]):
+        if p.info["name"] == name and p.pid != pid:
+            p.terminate()
+
+
 COLUMN_TIME = 0
 COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
@@ -199,6 +207,7 @@ COLUMN_MESSAGE = 3
 
 
 def main():
+    process_kill_by_name("vrc_joined_bell.exe")
     with open("notice.yml", "r") as conf:
         config = yaml.load(conf, Loader=yaml.SafeLoader)
 
