@@ -23,10 +23,10 @@ notices:
   - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:requestInvite.*'
     sound: 'reqInvite.wav'
     message: 'さんからリクエストインバイトが届きました'
-  - event: '.*?\[NetworkManager\] OnPlayerJoined (.*)'
+  - event: '.*?OnPlayerJoined (.*)'
     sound: 'playerJoined.wav'
     message: 'さんが入室しました'
-  - event: '.*?\[NetworkManager\] OnPlayerLeft (.*)'
+  - event: '.*?OnPlayerLeft (.*)'
     sound: 'playerLeft.wav'
     message: 'さんが退出しました'
 
