@@ -1,13 +1,16 @@
 import datetime
-import logging
-import time
 import glob
+import io
+import logging
 import os
-import re
-import wave
 import psutil
-import yaml
+import re
+import sys
 import threading
+import time
+import wave
+import yaml
+
 from flask import Flask
 
 # disable pygame version log
@@ -96,6 +99,8 @@ def play(data_path, volume):
 
 
 enable_server_silent = False
+logger = logging.getLogger(__name__)
+log_io = io.StringIO()
 
 
 def toggle_server(host, port):
@@ -104,14 +109,27 @@ def toggle_server(host, port):
     log.disabled = True
     srv.logger.disabled = True
 
-    print("start toggle server")
+    logger.info("start toggle server")
 
-    @srv.route("/")
-    def handler():
+    @srv.route("/log")
+    def log():
+        value = log_io.getvalue().replace("\n", "<br>")
+        return f"{value}"
+
+    @srv.route("/toggle")
+    def toggle():
         global enable_server_silent
         enable_server_silent = not enable_server_silent
 
-        print(f"silent mode status change to {enable_server_silent} ")
+        logger.info(f"silent mode status change to {enable_server_silent} ")
+
+        return f"STATUS {enable_server_silent}"
+
+    @srv.route("/state")
+    def show():
+        global enable_server_silent
+
+        logger.info(f"silent mode status: {enable_server_silent} ")
 
         return f"STATUS {enable_server_silent}"
 
@@ -132,18 +150,26 @@ COLUMN_MESSAGE = 3
 
 
 def main():
+    logger.setLevel(level=logging.INFO)
+    std_handler = logging.StreamHandler(stream=sys.stdout)
+    handler = logging.StreamHandler(stream=log_io)
+    std_handler.setFormatter(logging.Formatter("%(message)s"))
+    handler.setFormatter(logging.Formatter("%(message)s"))
+
+    logger.addHandler(std_handler)
+    logger.addHandler(handler)
     process_kill_by_name("vrc_joined_bell.exe")
     with open("notice.yml", "r") as conf:
         config = yaml.load(conf, Loader=yaml.SafeLoader)
 
     data = {}
-    print("events")
+    logger.info("events")
     for notice in config["notices"]:
         data[notice["event"]] = ["", re.compile(notice["event"]), notice["sound"]]
-        print("  " + notice["event"] + ": " + notice["sound"])
+        logger.info("  " + notice["event"] + ": " + notice["sound"])
         if "message" in notice:
             data[notice["event"]].append(notice["message"])
-            print("        " + notice["message"])
+            logger.info("        " + notice["message"])
 
     if config["silent"]["toggle_server"]:
         try:
@@ -163,17 +189,16 @@ def main():
     end = datetime.datetime.strptime(config["silent"]["time"]["end"], "%H:%M:%S").time()
     behavior = config["silent"]["behavior"]
     volume = config["silent"]["volume"]
-    print("sleep time behavior ", behavior, start, "-", end)
+    logger.info("sleep time behavior ", behavior, start, "-", end)
 
     enableCevio = False
     if "cevio" in config:
         import clr
-        import sys
 
         try:
             sys.path.append(os.path.abspath(config["cevio"]["dll"]))
 
-            print("CeVIO dll:", config["cevio"]["dll"])
+            logger.info("CeVIO dll:", config["cevio"]["dll"])
             clr.AddReference("CeVIO.Talk.RemoteService")
             import CeVIO.Talk.RemoteService as cs
 
@@ -182,7 +207,7 @@ def main():
             talker.Cast = config["cevio"]["cast"]
             talker.Volume = 100
             enableCevio = True
-            print("cast:", config["cevio"]["cast"])
+            logger.info("cast:", config["cevio"]["cast"])
         except:
             import traceback
 
@@ -193,7 +218,7 @@ def main():
     logfiles.sort(key=os.path.getctime, reverse=True)
 
     with open(logfiles[0], "r", encoding="utf-8") as f:
-        print("open logfile : ", logfiles[0])
+        logger.info("open logfile : ", logfiles[0])
         loglines = tail(f)
 
         timereg = re.compile(
@@ -207,7 +232,7 @@ def main():
             for pattern, item in data.items():
                 match = item[COLUMN_EVENT_PATTERN].match(line)
                 if match and logtime.group(1) != item[COLUMN_TIME]:
-                    print(line)
+                    logger.info(line)
                     item[COLUMN_TIME] = logtime.group(1)
                     group = ""
                     if len(match.groups()) > 0:
