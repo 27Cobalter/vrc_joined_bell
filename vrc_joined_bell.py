@@ -189,7 +189,7 @@ def main():
     end = datetime.datetime.strptime(config["silent"]["time"]["end"], "%H:%M:%S").time()
     behavior = config["silent"]["behavior"]
     volume = config["silent"]["volume"]
-    logger.info("sleep time behavior ", behavior, start, "-", end)
+    logger.info("sleep time behavior {} {} {} {}".format(behavior, start, "-", end))
 
     enableCevio = False
     if "cevio" in config:
@@ -198,7 +198,7 @@ def main():
         try:
             sys.path.append(os.path.abspath(config["cevio"]["dll"]))
 
-            logger.info("CeVIO dll:", config["cevio"]["dll"])
+            logger.info("CeVIO dll: " + config["cevio"]["dll"])
             clr.AddReference("CeVIO.Talk.RemoteService")
             import CeVIO.Talk.RemoteService as cs
 
@@ -207,7 +207,7 @@ def main():
             talker.Cast = config["cevio"]["cast"]
             talker.Volume = 100
             enableCevio = True
-            logger.info("cast:", config["cevio"]["cast"])
+            logger.info("cast: " + config["cevio"]["cast"])
         except:
             import traceback
 
@@ -218,7 +218,7 @@ def main():
     logfiles.sort(key=os.path.getctime, reverse=True)
 
     with open(logfiles[0], "r", encoding="utf-8") as f:
-        logger.info("open logfile : ", logfiles[0])
+        logger.info("open logfile : " + logfiles[0])
         loglines = tail(f)
 
         timereg = re.compile(
