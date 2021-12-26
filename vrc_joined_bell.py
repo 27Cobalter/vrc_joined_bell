@@ -128,9 +128,6 @@ def toggle_server(host, port):
     @srv.route("/state")
     def show():
         global enable_server_silent
-
-        logger.info(f"silent mode status: {enable_server_silent} ")
-
         return f"STATUS {enable_server_silent}"
 
     srv.run(host=host, port=port)
