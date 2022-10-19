@@ -133,13 +133,6 @@ def toggle_server(host, port):
     srv.run(host=host, port=port)
 
 
-def process_kill_by_name(name):
-    pid = os.getpid()
-    for p in psutil.process_iter(attrs=["pid", "name"]):
-        if p.info["name"] == name and p.pid != pid:
-            p.terminate()
-
-
 COLUMN_TIME = 0
 COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
@@ -155,7 +148,6 @@ def main():
 
     logger.addHandler(std_handler)
     logger.addHandler(handler)
-    process_kill_by_name("vrc_joined_bell.exe")
     with open("notice.yml", "r") as conf:
         config = yaml.load(conf, Loader=yaml.SafeLoader)
 
@@ -173,6 +165,7 @@ def main():
             thread = threading.Thread(
                 target=toggle_server,
                 args=(config["silent"]["host"], config["silent"]["port"]),
+                daemon=True,
             )
             thread.start()
         except:
@@ -222,10 +215,16 @@ def main():
             "([0-9]{4}\.[0-9]{2}\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) .*"
         )
 
+        terminatereg = re.compile(".*?VRCApplication: OnApplicationQuit at (.*)")
+
         for line in loglines:
             logtime = timereg.match(line)
             if not logtime:
                 continue
+            # おわり
+            if terminatereg.match(line):
+                logger.info(line)
+                return
             for pattern, item in data.items():
                 match = item[COLUMN_EVENT_PATTERN].match(line)
                 if match and logtime.group(1) != item[COLUMN_TIME]:
