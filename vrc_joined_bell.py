@@ -38,10 +38,6 @@ def tail(thefile):
             time.sleep(0.5)
 
 
-def is_silent_exclude_days_of_week(exclude_days_of_week):
-    return datetime.datetime.now().strftime("%a") in exclude_days_of_week
-
-
 def is_silent(config, group):
     if (
         "toggle_server" in config["silent"]
@@ -60,11 +56,6 @@ def is_silent(config, group):
 
     if "match_group" in config["silent"]["exclude"] and is_silent_exclude_event(
         config["silent"]["exclude"]["match_group"], group
-    ):
-        return False
-
-    if "days_of_week" in config["silent"]["exclude"] and is_silent_exclude_days_of_week(
-        config["silent"]["exclude"]["days_of_week"]
     ):
         return False
 
@@ -177,9 +168,7 @@ def main():
         config["silent"]["time"]["start"], "%H:%M:%S"
     ).time()
     end = datetime.datetime.strptime(config["silent"]["time"]["end"], "%H:%M:%S").time()
-    behavior = config["silent"]["behavior"]
-    volume = config["silent"]["volume"]
-    logger.info("sleep time behavior {} {} {} {}".format(behavior, start, "-", end))
+    logger.info("sleep time {} {} {}".format(start, "-", end))
 
     enableCevio = False
     if "cevio" in config:
@@ -210,12 +199,10 @@ def main():
     with open(logfiles[0], "r", encoding="utf-8") as f:
         logger.info("open logfile : " + logfiles[0])
         loglines = tail(f)
-
         timereg = re.compile(
             "([0-9]{4}\.[0-9]{2}\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) .*"
         )
-
-        terminatereg = re.compile(".*?VRCApplication: OnApplicationQuit at (.*)")
+        terminatereg = re.compile(".*?VRCApplication: OnApplicationQuit at .*")
 
         for line in loglines:
             logtime = timereg.match(line)
@@ -225,6 +212,7 @@ def main():
             if terminatereg.match(line):
                 logger.info(line)
                 return
+
             for pattern, item in data.items():
                 match = item[COLUMN_EVENT_PATTERN].match(line)
                 if match and logtime.group(1) != item[COLUMN_TIME]:
@@ -233,18 +221,11 @@ def main():
                     group = ""
                     if len(match.groups()) > 0:
                         group = match.group(1)
-                    silent_time = is_silent(config, group)
 
-                    if behavior == "ignore" and silent_time:
+                    if is_silent(config, group):
                         break
 
-                    if behavior == "volume_down" and silent_time:
-                        play_volume = volume
-                    else:
-                        play_volume = 1.0
-
                     if enableCevio and len(item) == 4:
-                        talker.Volume = play_volume * 100
                         group = re.sub(r"[-―]", "", group)
                         if (
                             len(talker.GetPhonemes(group)) != 0
@@ -255,7 +236,7 @@ def main():
                             state.Wait()
                             break
 
-                    play(item[COLUMN_SOUND], play_volume)
+                    play(item[COLUMN_SOUND], 1)
                     break
 
 
