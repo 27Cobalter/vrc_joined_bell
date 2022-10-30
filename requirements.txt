@@ -1,5 +1,6 @@
 flask
 freezegun
+openvr
 psutil
 pygame
 pytest

@@ -1,10 +1,13 @@
 import datetime
 import glob
 import io
+import json
 import logging
+import openvr
 import os
 import psutil
 import re
+import requests
 import sys
 import threading
 import time
@@ -124,6 +127,42 @@ def toggle_server(host, port):
     srv.run(host=host, port=port)
 
 
+class Discord_controller:
+    record_url = None
+    notification_url = None
+    headers = {"Content-Type": "application/json"}
+
+    def record(self, text):
+        if self.record_url:
+            self.post(self.record_url, "vrc_joined_bell_record", text)
+
+    def notification(self, text):
+        if self.notification_url:
+            self.post(self.notification_url, "vrc_joined_bell_notification", text)
+
+    def post(self, url, name, text):
+        body = {
+            "username": name,
+            "content": text,
+        }
+        requests.post(url, json.dumps(body), headers=self.headers)
+
+
+class Hmd_controller:
+    # たぶんHMD
+    hmd_id = 0
+    vr_system = None
+
+    def __init__(self):
+        if openvr.isHmdPresent() and openvr.isRuntimeInstalled():
+            self.vr_system = openvr.init(openvr.VRApplication_Utility)
+
+    def isHmdIdle(self):
+        if not self.vr_system:
+            return False
+        return self.vr_system.getTrackedDeviceActivityLevel(0) == 0
+
+
 COLUMN_TIME = 0
 COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
@@ -192,12 +231,26 @@ def main():
 
             traceback.print_exc()
 
+    record_url = None
+    notification_url = None
+    dc = Discord_controller()
+    if "webhook" in config:
+        if "record_url" in config["webhook"]:
+            dc.record_url = config["webhook"]["record_url"]
+        if "notification_url" in config["webhook"]:
+            dc.notification_url = config["webhook"]["notification_url"]
+            if "afk_detect" in config["webhook"]["notification_url"]:
+                if config["webhook"]["notification_url"]["afk_detect"]:
+                    hc = Hmd_controller()
+
     vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(vrcdir + "output_log_*.txt")
     logfiles.sort(key=os.path.getctime, reverse=True)
 
     with open(logfiles[0], "r", encoding="utf-8") as f:
-        logger.info("open logfile : " + logfiles[0])
+        open_text = f"open logfile : {logfiles[0]}"
+        logger.info(open_text)
+        dc.record(open_text)
         loglines = tail(f)
         timereg = re.compile(
             "([0-9]{4}\.[0-9]{2}\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) .*"
@@ -211,11 +264,17 @@ def main():
             # おわり
             if terminatereg.match(line):
                 logger.info(line)
+                dc.record(line)
                 return
 
             for pattern, item in data.items():
                 match = item[COLUMN_EVENT_PATTERN].match(line)
-                if match and logtime.group(1) != item[COLUMN_TIME]:
+                if not match:
+                    continue
+                dc.record(line)
+                if hc and hc.isHmdIdle():
+                    dc.notification(line)
+                if logtime.group(1) != item[COLUMN_TIME]:
                     logger.info(line)
                     item[COLUMN_TIME] = logtime.group(1)
                     group = ""

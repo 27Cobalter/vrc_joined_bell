@@ -29,3 +29,9 @@ notices:
 #   cast: 'IA'
 #   max_phonemes: 16 # マッチしたグループの音素の数がこれ以下のときCeVIOで読む
 #   dll: 'C:\Program Files\CeVIO\CeVIO Creative Studio (64bit)'
+
+# discordのwebhookを使う場合に記述
+# webhook:
+#   record_url: "https://discord.com/api/webhooks/0000000000000000000/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+#   notification_url: "https://discord.com/api/webhooks/0000000000000000000/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+#     afk_detect: true
