@@ -165,7 +165,11 @@ class Hmd_controller:
     def isHmdIdle(self):
         if not self.vr_system:
             return False
-        return self.vr_system.getTrackedDeviceActivityLevel(0) == 0
+        # https://github.com/ValveSoftware/openvr/blob/08de3821dfd3aa46f778376680c68f33b9fdcb6c/headers/openvr_driver.h#L971-L976
+        # 0: Idle HMDつけてないとき HMD持って動かしてるときもこれ
+        # 1: Active HMDつけてるとき
+        # 3: Idle for at least 5sec HMDが動かずに5秒立ったとき
+        return self.vr_system.getTrackedDeviceActivityLevel(0) == 3
 
 
 COLUMN_TIME = 0
@@ -281,7 +285,7 @@ def main():
                     continue
                 logger.info(line)
                 dc.record(line)
-                if hc and hc.isHmdIdle():
+                if hc and hc.isHmdIdle() and not enable_server_silent:
                     dc.notification(line)
                 if logtime.group(1) != item[COLUMN_TIME]:
                     item[COLUMN_TIME] = logtime.group(1)
