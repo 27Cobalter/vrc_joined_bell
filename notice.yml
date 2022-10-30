@@ -1,8 +1,14 @@
-silent_time:
-  start: '00:00:00'
-  end:   '06:00:00'
-  behavior: 'volume_down' # or ignore
-  volume: 0.05
+silent:
+  time:
+    start: '00:00:00'
+    end:   '06:00:00'
+    match_group: # user
+      - 27Cobalter
+      - bootjp／ぶーと
+
+  toggle_server: off
+  host: 127.0.0.1
+  port: 80
 
 notices:
   - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:invite.*'
@@ -11,10 +17,10 @@ notices:
   - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:requestInvite.*'
     sound: 'reqInvite.wav'
     message: 'さんからリクエストインバイトが届きました'
-  - event: '.*?\[NetworkManager\] OnPlayerJoined (.*)'
+  - event: '.*?OnPlayerJoined (.*)'
     sound: 'playerJoined.wav'
     message: 'さんが入室しました'
-  - event: '.*?\[NetworkManager\] OnPlayerLeft (.*)'
+  - event: '.*?OnPlayerLeft (.*)'
     sound: 'playerLeft.wav'
     message: 'さんが退出しました'
 

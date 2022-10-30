@@ -25,6 +25,12 @@ $ pip install pygame
 $ pip install pythonnet
 ```
 
+### test 
+```
+pip install pytest freezegun
+ENV=test pytest vrc_joined_bell.py 
+```
+
 ### 実行方法
 #### pythonで実行
 - `vrc_joined_bell.py`と同じ階層に設定ファイル`notice.yml`を配置して以下のコマンドを実行
@@ -44,12 +50,38 @@ dist以下に実行ファイルが生成されるのでexeファイルと同じ�
 - dllにCeVIOのDLL(`CeVIO.Talk.RemoteService.DLL`)が配置してあるディレクトリを指定 デフォルトでは`C:\Program Files\CeVIO\CeVIO Creative Studio (64bit)`
 - 例
 ```notice.yml
-# 通知音を鳴らしたくない時間
-silent_time:
-  start: '00:00:00'
-  end:   '06:00:00'
-  behavior: "volume_down" # or ignore
+# サイレントモードの設定
+silent:
+  # サイレントモードの振る舞いの設定
+  # ignore は通知を止める
+  # volume_down は音量を下げる
+  behavior: 'volume_down' # or ignore
+  # サイレントモード時で volume_down 時の音量の値
   volume: 0.05
+  # 時刻でサイレントモードを有効にする時間
+  time:
+    # 開始時刻
+    start: '00:00:00'
+    # 終了時刻
+    end:   '06:00:00'
+  
+# サイレントモードの除外設定
+  exclude:
+    # 曜日
+    days_of_week:
+      - "Sat"
+      - "Sun"
+    # ユーザー（マッチグループ1つめ）
+    match_group: # user
+      - 27Cobalter
+      - bootjp／ぶーと
+  # web server経由での on/offを可能にするか
+  toggle_server: on
+  # listen するホスト名
+  host: 127.0.0.1
+  # ポート
+  port: 80
+
 notices:
 # invite
   - event: '.*?Received Notification:.*?type:invite.*'

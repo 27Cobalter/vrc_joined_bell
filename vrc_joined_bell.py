@@ -1,12 +1,22 @@
 import datetime
-import time
 import glob
+import io
+import logging
 import os
+import psutil
 import re
+import sys
+import threading
+import time
 import wave
+import yaml
+
+from flask import Flask
+
+# disable pygame version log
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 import pygame
-import yaml
 
 
 def tail(thefile):
@@ -22,10 +32,42 @@ def tail(thefile):
             if line == "\n" or line == "\r\n":
                 continue
             line = line.rstrip("\n")
-            yield line
+            yield repr(line)[1:-1]
         except UnicodeDecodeError:
             thefile.seek(offset, 0)
             time.sleep(0.5)
+
+
+def is_silent(config, group):
+    if (
+        "toggle_server" in config["silent"]
+        and config["silent"]["toggle_server"]
+        and enable_server_silent
+    ):
+        return True
+
+    start = datetime.datetime.strptime(
+        config["silent"]["time"]["start"], "%H:%M:%S"
+    ).time()
+    end = datetime.datetime.strptime(config["silent"]["time"]["end"], "%H:%M:%S").time()
+
+    if not is_silent_time(start, end):
+        return False
+
+    if "match_group" in config["silent"]["exclude"] and is_silent_exclude_event(
+        config["silent"]["exclude"]["match_group"], group
+    ):
+        return False
+
+    return True
+
+
+def is_silent_exclude_event(match_groups, group):
+    for match_group in match_groups:
+        if match_group == group:
+            return True
+
+    return False
 
 
 def is_silent_time(start, end):
@@ -47,41 +89,95 @@ def play(data_path, volume):
     player.play()
 
 
+enable_server_silent = False
+logger = logging.getLogger(__name__)
+log_io = io.StringIO()
+
+
+def toggle_server(host, port):
+    srv = Flask(__name__)
+    log = logging.getLogger("werkzeug")
+    log.disabled = True
+    srv.logger.disabled = True
+
+    logger.info("start toggle server")
+
+    @srv.route("/log")
+    def log():
+        value = log_io.getvalue().replace("\n", "<br>")
+        return f"{value}"
+
+    @srv.route("/toggle")
+    def toggle():
+        global enable_server_silent
+        enable_server_silent = not enable_server_silent
+
+        logger.info(f"silent mode status change to {enable_server_silent} ")
+
+        return f"STATUS {enable_server_silent}"
+
+    @srv.route("/state")
+    def show():
+        global enable_server_silent
+        return f"STATUS {enable_server_silent}"
+
+    srv.run(host=host, port=port)
+
+
 COLUMN_TIME = 0
 COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
 COLUMN_MESSAGE = 3
 
-if __name__ == "__main__":
+
+def main():
+    logger.setLevel(level=logging.INFO)
+    std_handler = logging.StreamHandler(stream=sys.stdout)
+    handler = logging.StreamHandler(stream=log_io)
+    std_handler.setFormatter(logging.Formatter("%(message)s"))
+    handler.setFormatter(logging.Formatter("%(message)s"))
+
+    logger.addHandler(std_handler)
+    logger.addHandler(handler)
     with open("notice.yml", "r") as conf:
         config = yaml.load(conf, Loader=yaml.SafeLoader)
 
     data = {}
-    print("events")
+    logger.info("events")
     for notice in config["notices"]:
         data[notice["event"]] = ["", re.compile(notice["event"]), notice["sound"]]
-        print("  " + notice["event"] + ": " + notice["sound"])
+        logger.info("  " + notice["event"] + ": " + notice["sound"])
         if "message" in notice:
             data[notice["event"]].append(notice["message"])
-            print("        " + notice["message"])
+            logger.info("        " + notice["message"])
+
+    if config["silent"]["toggle_server"]:
+        try:
+            thread = threading.Thread(
+                target=toggle_server,
+                args=(config["silent"]["host"], config["silent"]["port"]),
+                daemon=True,
+            )
+            thread.start()
+        except:
+            import traceback
+
+            traceback.print_exc()
 
     start = datetime.datetime.strptime(
-        config["silent_time"]["start"], "%H:%M:%S"
+        config["silent"]["time"]["start"], "%H:%M:%S"
     ).time()
-    end = datetime.datetime.strptime(config["silent_time"]["end"], "%H:%M:%S").time()
-    behavior = config["silent_time"]["behavior"]
-    volume = config["silent_time"]["volume"]
-    print("sleep time behavior ", behavior, start, "-", end)
+    end = datetime.datetime.strptime(config["silent"]["time"]["end"], "%H:%M:%S").time()
+    logger.info("sleep time {} {} {}".format(start, "-", end))
 
     enableCevio = False
     if "cevio" in config:
         import clr
-        import sys
 
         try:
             sys.path.append(os.path.abspath(config["cevio"]["dll"]))
 
-            print("CeVIO dll:", config["cevio"]["dll"])
+            logger.info("CeVIO dll: " + config["cevio"]["dll"])
             clr.AddReference("CeVIO.Talk.RemoteService")
             import CeVIO.Talk.RemoteService as cs
 
@@ -90,7 +186,7 @@ if __name__ == "__main__":
             talker.Cast = config["cevio"]["cast"]
             talker.Volume = 100
             enableCevio = True
-            print("cast:", config["cevio"]["cast"])
+            logger.info("cast: " + config["cevio"]["cast"])
         except:
             import traceback
 
@@ -101,35 +197,36 @@ if __name__ == "__main__":
     logfiles.sort(key=os.path.getctime, reverse=True)
 
     with open(logfiles[0], "r", encoding="utf-8") as f:
-        print("open logfile : ", logfiles[0])
+        logger.info("open logfile : " + logfiles[0])
         loglines = tail(f)
-
         timereg = re.compile(
             "([0-9]{4}\.[0-9]{2}\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) .*"
         )
+        terminatereg = re.compile(".*?VRCApplication: OnApplicationQuit at .*")
 
         for line in loglines:
             logtime = timereg.match(line)
             if not logtime:
                 continue
+            # おわり
+            if terminatereg.match(line):
+                logger.info(line)
+                return
+
             for pattern, item in data.items():
                 match = item[COLUMN_EVENT_PATTERN].match(line)
                 if match and logtime.group(1) != item[COLUMN_TIME]:
-                    print(line)
+                    logger.info(line)
                     item[COLUMN_TIME] = logtime.group(1)
-                    silent_time = is_silent_time(start, end)
+                    group = ""
+                    if len(match.groups()) > 0:
+                        group = match.group(1)
 
-                    if behavior == "ignore" and silent_time:
+                    if is_silent(config, group):
                         break
 
-                    if behavior == "volume_down" and silent_time:
-                        play_volume = volume
-                    else:
-                        play_volume = 1.0
-
                     if enableCevio and len(item) == 4:
-                        talker.Volume = play_volume * 100
-                        group = re.sub(r"[-―]", "", match.group(1))
+                        group = re.sub(r"[-―]", "", group)
                         if (
                             len(talker.GetPhonemes(group)) != 0
                             and len(talker.GetPhonemes(group))
@@ -139,5 +236,9 @@ if __name__ == "__main__":
                             state.Wait()
                             break
 
-                    play(item[COLUMN_SOUND], play_volume)
+                    play(item[COLUMN_SOUND], 1)
                     break
+
+
+if __name__ == "__main__":
+    main()
