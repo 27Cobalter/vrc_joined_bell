@@ -156,7 +156,7 @@ class Hmd_controller:
         if openvr.isHmdPresent() and openvr.isRuntimeInstalled():
             self.vr_system = openvr.init(openvr.VRApplication_Utility)
             # SteamVRが起動してるかのいい感じの判定APIないですか...?
-            if not self.vr_system.getControllerState(0)[0]:
+            if not self.vr_system.getControllerState(self.hmd_id)[0]:
                 logger.info("can't use HmdController")
                 self.vr_system = None
             else:
@@ -169,7 +169,7 @@ class Hmd_controller:
         # 0: Idle HMDつけてないとき HMD持って動かしてるときもこれ
         # 1: Active HMDつけてるとき
         # 3: Idle for at least 5sec HMDが動かずに5秒立ったとき
-        return self.vr_system.getTrackedDeviceActivityLevel(0) == 3
+        return self.vr_system.getTrackedDeviceActivityLevel(self.hmd_id) == 3
 
 
 COLUMN_TIME = 0
