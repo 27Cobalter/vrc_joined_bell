@@ -5,7 +5,6 @@ import json
 import logging
 import openvr
 import os
-import psutil
 import re
 import requests
 import sys
@@ -156,6 +155,12 @@ class Hmd_controller:
     def __init__(self):
         if openvr.isHmdPresent() and openvr.isRuntimeInstalled():
             self.vr_system = openvr.init(openvr.VRApplication_Utility)
+            # SteamVRが起動してるかのいい感じの判定APIないですか...?
+            if not self.vr_system.getControllerState(0)[0]:
+                logger.info("can't use HmdController")
+                self.vr_system = None
+            else:
+                logger.info("can use HmdController")
 
     def isHmdIdle(self):
         if not self.vr_system:
@@ -235,13 +240,16 @@ def main():
     notification_url = None
     dc = Discord_controller()
     if "webhook" in config:
+        logger.info("webhook")
         if "record_url" in config["webhook"]:
+            logger.info("  use record webhook")
             dc.record_url = config["webhook"]["record_url"]
-        if "notification_url" in config["webhook"]:
-            dc.notification_url = config["webhook"]["notification_url"]
-            if "afk_detect" in config["webhook"]["notification_url"]:
-                if config["webhook"]["notification_url"]["afk_detect"]:
-                    hc = Hmd_controller()
+        if "notification" in config["webhook"]:
+            logger.info("  use notification webhook")
+            dc.notification_url = config["webhook"]["notification"]["notification_url"]
+            if config["webhook"]["notification"]["afk_detect"]:
+                logger.info("    use AFKDetect")
+                hc = Hmd_controller()
 
     vrcdir = f"{os.environ['USERPROFILE']}\\AppData\\LocalLow\\VRChat\\VRChat\\"
     logfiles = glob.glob(f"{vrcdir}output_log_*.txt")

@@ -32,7 +32,7 @@ jobs:
 
     - name: Build as binary
       run: |
-        pyinstaller.exe vrc_joined_bell.py --version-file "version.txt" -F --hidden-import=clr
+        pyinstaller.exe vrc_joined_bell.py --version-file "version.txt" -F --hidden-import=clr --collect-all openvr
 
     - name: Achive to zip
       run: |
