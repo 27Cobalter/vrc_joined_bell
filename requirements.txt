@@ -1,7 +1,7 @@
-pyyaml
-pygame
-pythonnet
-pytest
-freezegun
 flask
+freezegun
 psutil
+pygame
+pytest
+pythonnet
+pyyaml
