@@ -185,10 +185,10 @@ def main():
     logger.info("events")
     for notice in config["notices"]:
         data[notice["event"]] = ["", re.compile(notice["event"]), notice["sound"]]
-        logger.info("  " + notice["event"] + ": " + notice["sound"])
+        logger.info(f"  {notice['event']}: {notice['sound']}")
         if "message" in notice:
             data[notice["event"]].append(notice["message"])
-            logger.info("        " + notice["message"])
+            logger.info(f"        {notice['message']}")
 
     if config["silent"]["toggle_server"]:
         try:
@@ -216,7 +216,7 @@ def main():
         try:
             sys.path.append(os.path.abspath(config["cevio"]["dll"]))
 
-            logger.info("CeVIO dll: " + config["cevio"]["dll"])
+            logger.info(f"CeVIO dll: {config['cevio']['dll']}")
             clr.AddReference("CeVIO.Talk.RemoteService")
             import CeVIO.Talk.RemoteService as cs
 
@@ -225,7 +225,7 @@ def main():
             talker.Cast = config["cevio"]["cast"]
             talker.Volume = 100
             enableCevio = True
-            logger.info("cast: " + config["cevio"]["cast"])
+            logger.info(f"cast: {config['cevio']['cast']}")
         except:
             import traceback
 
@@ -243,8 +243,8 @@ def main():
                 if config["webhook"]["notification_url"]["afk_detect"]:
                     hc = Hmd_controller()
 
-    vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
-    logfiles = glob.glob(vrcdir + "output_log_*.txt")
+    vrcdir = f"{os.environ['USERPROFILE']}\\AppData\\LocalLow\\VRChat\\VRChat\\"
+    logfiles = glob.glob(f"{vrcdir}output_log_*.txt")
     logfiles.sort(key=os.path.getctime, reverse=True)
 
     with open(logfiles[0], "r", encoding="utf-8") as f:
