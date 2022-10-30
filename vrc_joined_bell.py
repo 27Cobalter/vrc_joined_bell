@@ -271,11 +271,11 @@ def main():
                 match = item[COLUMN_EVENT_PATTERN].match(line)
                 if not match:
                     continue
+                logger.info(line)
                 dc.record(line)
                 if hc and hc.isHmdIdle():
                     dc.notification(line)
                 if logtime.group(1) != item[COLUMN_TIME]:
-                    logger.info(line)
                     item[COLUMN_TIME] = logtime.group(1)
                     group = ""
                     if len(match.groups()) > 0:
