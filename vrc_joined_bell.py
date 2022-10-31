@@ -155,12 +155,17 @@ class Hmd_controller:
     def __init__(self):
         if openvr.isHmdPresent() and openvr.isRuntimeInstalled():
             self.vr_system = openvr.init(openvr.VRApplication_Utility)
-            # SteamVRが起動してるかのいい感じの判定APIないですか...?
-            if not self.vr_system.getControllerState(self.hmd_id)[0]:
-                logger.info("can't use HmdController")
+            # 認識しているHMDがIndexか，SteamVR起動してないと''が返ってくるはず
+            if (
+                self.vr_system.getStringTrackedDeviceProperty(
+                    self.hmd_id, openvr.Prop_ModelNumber_String
+                )
+                != "Index"
+            ):
+                logger.info("afk_detect only support IndexHMD")
                 self.vr_system = None
             else:
-                logger.info("can use HmdController")
+                logger.info("IndexHMD detected!")
 
     def isHmdIdle(self):
         if not self.vr_system:
