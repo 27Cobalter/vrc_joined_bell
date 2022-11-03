@@ -1,7 +1,8 @@
-pyyaml
-pygame
-pythonnet
-pytest
-freezegun
 flask
+freezegun
+openvr
 psutil
+pygame
+pytest
+pythonnet
+pyyaml

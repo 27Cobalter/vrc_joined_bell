@@ -1,10 +1,12 @@
 import datetime
 import glob
 import io
+import json
 import logging
+import openvr
 import os
-import psutil
 import re
+import requests
 import sys
 import threading
 import time
@@ -124,6 +126,57 @@ def toggle_server(host, port):
     srv.run(host=host, port=port)
 
 
+class Discord_controller:
+    record_url = None
+    notification_url = None
+    headers = {"Content-Type": "application/json"}
+
+    def record(self, text):
+        if self.record_url:
+            self.post(self.record_url, "vrc_joined_bell_record", text)
+
+    def notification(self, text):
+        if self.notification_url:
+            self.post(self.notification_url, "vrc_joined_bell_notification", text)
+
+    def post(self, url, name, text):
+        body = {
+            "username": name,
+            "content": text,
+        }
+        requests.post(url, json.dumps(body), headers=self.headers)
+
+
+class Hmd_controller:
+    # たぶんHMD
+    hmd_id = 0
+    vr_system = None
+
+    def __init__(self):
+        if openvr.isHmdPresent() and openvr.isRuntimeInstalled():
+            self.vr_system = openvr.init(openvr.VRApplication_Utility)
+            # 認識しているHMDがIndexか，SteamVR起動してないと''が返ってくるはず
+            if (
+                self.vr_system.getStringTrackedDeviceProperty(
+                    self.hmd_id, openvr.Prop_ModelNumber_String
+                )
+                != "Index"
+            ):
+                logger.info("afk_detect only support IndexHMD")
+                self.vr_system = None
+            else:
+                logger.info("IndexHMD detected!")
+
+    def isHmdIdle(self):
+        if not self.vr_system:
+            return False
+        # https://github.com/ValveSoftware/openvr/blob/08de3821dfd3aa46f778376680c68f33b9fdcb6c/headers/openvr_driver.h#L971-L976
+        # 0: Idle HMDつけてないとき HMD持って動かしてるときもこれ
+        # 1: Active HMDつけてるとき
+        # 3: Idle for at least 5sec HMDが動かずに5秒立ったとき
+        return self.vr_system.getTrackedDeviceActivityLevel(self.hmd_id) == 3
+
+
 COLUMN_TIME = 0
 COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
@@ -146,10 +199,10 @@ def main():
     logger.info("events")
     for notice in config["notices"]:
         data[notice["event"]] = ["", re.compile(notice["event"]), notice["sound"]]
-        logger.info("  " + notice["event"] + ": " + notice["sound"])
+        logger.info(f"  {notice['event']}: {notice['sound']}")
         if "message" in notice:
             data[notice["event"]].append(notice["message"])
-            logger.info("        " + notice["message"])
+            logger.info(f"        {notice['message']}")
 
     if config["silent"]["toggle_server"]:
         try:
@@ -177,7 +230,7 @@ def main():
         try:
             sys.path.append(os.path.abspath(config["cevio"]["dll"]))
 
-            logger.info("CeVIO dll: " + config["cevio"]["dll"])
+            logger.info(f"CeVIO dll: {config['cevio']['dll']}")
             clr.AddReference("CeVIO.Talk.RemoteService")
             import CeVIO.Talk.RemoteService as cs
 
@@ -186,18 +239,35 @@ def main():
             talker.Cast = config["cevio"]["cast"]
             talker.Volume = 100
             enableCevio = True
-            logger.info("cast: " + config["cevio"]["cast"])
+            logger.info(f"cast: {config['cevio']['cast']}")
         except:
             import traceback
 
             traceback.print_exc()
 
-    vrcdir = os.environ["USERPROFILE"] + "\\AppData\\LocalLow\\VRChat\\VRChat\\"
-    logfiles = glob.glob(vrcdir + "output_log_*.txt")
+    record_url = None
+    notification_url = None
+    dc = Discord_controller()
+    if "webhook" in config:
+        logger.info("webhook")
+        if "record_url" in config["webhook"]:
+            logger.info("  use record webhook")
+            dc.record_url = config["webhook"]["record_url"]
+        if "notification" in config["webhook"]:
+            logger.info("  use notification webhook")
+            dc.notification_url = config["webhook"]["notification"]["notification_url"]
+            if config["webhook"]["notification"]["afk_detect"]:
+                logger.info("    use AFKDetect")
+                hc = Hmd_controller()
+
+    vrcdir = f"{os.environ['USERPROFILE']}\\AppData\\LocalLow\\VRChat\\VRChat\\"
+    logfiles = glob.glob(f"{vrcdir}output_log_*.txt")
     logfiles.sort(key=os.path.getctime, reverse=True)
 
     with open(logfiles[0], "r", encoding="utf-8") as f:
-        logger.info("open logfile : " + logfiles[0])
+        open_text = f"open logfile : {logfiles[0]}"
+        logger.info(open_text)
+        dc.record(open_text)
         loglines = tail(f)
         timereg = re.compile(
             "([0-9]{4}\.[0-9]{2}\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) .*"
@@ -211,12 +281,18 @@ def main():
             # おわり
             if terminatereg.match(line):
                 logger.info(line)
+                dc.record(line)
                 return
 
             for pattern, item in data.items():
                 match = item[COLUMN_EVENT_PATTERN].match(line)
-                if match and logtime.group(1) != item[COLUMN_TIME]:
-                    logger.info(line)
+                if not match:
+                    continue
+                logger.info(line)
+                dc.record(line)
+                if hc and hc.isHmdIdle() and not enable_server_silent:
+                    dc.notification(line)
+                if logtime.group(1) != item[COLUMN_TIME]:
                     item[COLUMN_TIME] = logtime.group(1)
                     group = ""
                     if len(match.groups()) > 0:
