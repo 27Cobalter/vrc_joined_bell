@@ -247,6 +247,7 @@ def main():
 
     record_url = None
     notification_url = None
+    hc = None
     dc = Discord_controller()
     if "webhook" in config:
         logger.info("webhook")
