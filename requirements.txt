@@ -6,3 +6,4 @@ pygame
 pytest
 pythonnet
 pyyaml
+requests
