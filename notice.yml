@@ -37,3 +37,8 @@ notices:
 #     notification_url:  "https://discord.com/api/webhooks/0000000000000000000/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 #     afk_detect: true
 
+experimental:
+  enable: true
+  users: # 通知するユーザーをリストで記述
+    - "27Cobalter"
+    - "bootjp／ぶーと"

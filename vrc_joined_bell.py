@@ -177,6 +177,58 @@ class Hmd_controller:
         return self.vr_system.getTrackedDeviceActivityLevel(self.hmd_id) == 3
 
 
+class ExperimentalFeature:
+    config = None
+    talker = None
+    logger = None
+    dc = None
+    hc = None
+    exp_arr = ["own"]
+    exp_reg_join = re.compile(".*?OnPlayerJoined (.*)")
+    exp_reg_left = re.compile(".*?OnPlayerLeft (.*)")
+    exp_reg_enter = re.compile(".*?\[Behaviour\] Entering Room: (.*)")
+    exp_reg_pen = re.compile(
+        ".*?\[Network Processing\] Transferred ownership of Pen to (.*)\."
+    )
+
+    def __init__(self, config, talker, logger, dc, hc):
+        if not config["experimental"] or not config["experimental"]["enable"]:
+            return
+        self.config = config
+        self.talker = talker
+        self.logger = logger
+        self.dc = dc
+        self.hc = hc
+
+    def execute(self, line):
+        if not self.talker:
+            return
+        match = self.exp_reg_enter.match(line)
+        if match:
+            self.exp_arr = ["master"]
+        match = self.exp_reg_join.match(line)
+        if match:
+            self.exp_arr.append(match.group(1))
+        match = self.exp_reg_left.match(line)
+        if match:
+            self.exp_arr[self.exp_arr.index(match.group(1))] = ""
+        match = self.exp_reg_pen.match(line)
+        if match:
+            if (
+                self.exp_arr[int(match.group(1))]
+                in self.config["experimental"]["users"]
+            ):
+                txt = f"{line} ({self.exp_arr[int(match.group(1))]})"
+                self.logger.info(txt)
+                self.dc.record(txt)
+                if self.hc and hc.isHmdIdle():
+                    self.dc.notification(txt)
+                state = self.talker.Speak(
+                    f"{self.exp_arr[int(match.group(1))]}さんがペンを持ちました"
+                )
+                state.Wait()
+
+
 COLUMN_TIME = 0
 COLUMN_EVENT_PATTERN = 1
 COLUMN_SOUND = 2
@@ -265,6 +317,8 @@ def main():
     logfiles = glob.glob(f"{vrcdir}output_log_*.txt")
     logfiles.sort(key=os.path.getctime, reverse=True)
 
+    expfeature = ExperimentalFeature(config, talker, logger, dc, hc)
+
     with open(logfiles[0], "r", encoding="utf-8") as f:
         open_text = f"open logfile : {logfiles[0]}"
         logger.info(open_text)
@@ -284,6 +338,8 @@ def main():
                 logger.info(line)
                 dc.record(line)
                 return
+
+            expfeature.execute(line)
 
             for pattern, item in data.items():
                 match = item[COLUMN_EVENT_PATTERN].match(line)
