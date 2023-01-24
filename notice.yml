@@ -38,7 +38,7 @@ notices:
 #     afk_detect: true
 
 experimental:
-  enable: true
+  enable: false
   users: # 通知するユーザーをリストで記述
     - "27Cobalter"
     - "bootjp／ぶーと"
