@@ -221,7 +221,7 @@ class ExperimentalFeature:
                 txt = f"{line} ({self.exp_arr[int(match.group(1))]})"
                 self.logger.info(txt)
                 self.dc.record(txt)
-                if self.hc and hc.isHmdIdle():
+                if self.hc and self.hc.isHmdIdle():
                     self.dc.notification(txt)
                 state = self.talker.Speak(
                     f"{self.exp_arr[int(match.group(1))]}さんがペンを持ちました"
