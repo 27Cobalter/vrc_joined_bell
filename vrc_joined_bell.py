@@ -215,7 +215,8 @@ class ExperimentalFeature:
         match = self.exp_reg_pen.match(line)
         if match:
             if (
-                self.exp_arr[int(match.group(1))]
+                int(match.group(1)) < len(self.exp_arr)
+                and self.exp_arr[int(match.group(1))]
                 in self.config["experimental"]["users"]
             ):
                 txt = f"{line} ({self.exp_arr[int(match.group(1))]})"
