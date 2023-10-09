@@ -290,7 +290,7 @@ def main():
                     continue
                 logger.info(line)
                 dc.record(line)
-                if hc and hc.isHmdIdle() and not enable_server_silent:
+                if hc is not None and hc.isHmdIdle() and not enable_server_silent:
                     dc.notification(line)
                 if logtime.group(1) != item[COLUMN_TIME]:
                     item[COLUMN_TIME] = logtime.group(1)
