@@ -3,6 +3,7 @@ freezegun
 openvr
 psutil
 pygame
+pyinstaller
 pytest
 pythonnet
 pyyaml
