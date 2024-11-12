@@ -17,10 +17,10 @@ notices:
   - event: '.*?Received Notification:.*?username:(.*?), sender user id:.*?type:requestInvite.*'
     sound: 'reqInvite.wav'
     message: 'さんからリクエストインバイトが届きました'
-  - event: '.*?OnPlayerJoined (.*)'
+  - event: '.*?OnPlayerJoined (.*) \(usr_[a-f0-9-]{36}\)'
     sound: 'playerJoined.wav'
     message: 'さんが入室しました'
-  - event: '.*?OnPlayerLeft (.*)'
+  - event: '.*?OnPlayerLeft (.*) \(usr_[a-f0-9-]{36}\)'
     sound: 'playerLeft.wav'
     message: 'さんが退出しました'
 
