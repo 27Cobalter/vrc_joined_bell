@@ -156,12 +156,18 @@ class Hmd_controller:
         if openvr.isHmdPresent() and openvr.isRuntimeInstalled():
             self.vr_system = openvr.init(openvr.VRApplication_Utility)
             # 認識しているHMDがIndexか，SteamVR起動してないと''が返ってくるはず
-            if (
-                self.vr_system.getStringTrackedDeviceProperty(
+            try:
+                device = self.vr_system.getStringTrackedDeviceProperty(
                     self.hmd_id, openvr.Prop_ModelNumber_String
                 )
-                != "Index"
-            ):
+            # openvr.error_code.TrackedProp_InvalidDevice('') を想定しているが
+            # どのみち回復できないので，エラーを無視してNoneとする
+            # noinspection PyBroadException
+            except:
+                self.vr_system = None
+                return
+
+            if device != "Index":
                 logger.info("afk_detect only support IndexHMD")
                 self.vr_system = None
             else:
@@ -245,8 +251,6 @@ def main():
 
             traceback.print_exc()
 
-    record_url = None
-    notification_url = None
     hc = None
     dc = Discord_controller()
     if "webhook" in config:
